@@ -3194,18 +3194,23 @@ function viewEMagnet(m){
     <div class="note" style="text-transform:uppercase;letter-spacing:.08em;font-weight:700">Batterien</div><div class="btns"><button class="b pri" data-b="1">1 Batterie</button><button class="b" data-b="2">2 Batterien</button></div>
     <div class="btns"><button class="b" id="core" aria-pressed="true">Eisennagel in der Spule</button><button class="b" id="fs">Vollbild</button></div>
     <div class="merke" id="einfo"></div><div class="note">Modell: Die Anzahl der Büroklammern ist vereinfacht berechnet.</div>`);
-  let on=false,n=20,bat=1,core=true,pol=1,lift=0,alive=true;const R=rng(3),clips=Array.from({length:14},(_,i)=>({x:200+R()*190,y:372+R()*14,r:R()*3}));
+  let on=false,n=20,bat=1,core=true,pol=1,lift=0,alive=true,swA=-0.6;const R=rng(3),clips=Array.from({length:14},(_,i)=>({x:200+R()*190,y:372+R()*14,r:R()*3}));
   const want=()=>on?Math.min(14,Math.floor(n*bat*(core?1:.12)/6)):0;
   function draw(){const ink=inkColor();ctx.clearRect(0,0,600,420);
     // Nagel und Spule
     const cy=170;if(core){ctx.fillStyle='#adb5bd';ctx.strokeStyle='#1f2d3a';ctx.lineWidth=2;ctx.fillRect(160,cy-9,280,18);ctx.strokeRect(160,cy-9,280,18);ctx.beginPath();ctx.moveTo(440,cy-9);ctx.lineTo(470,cy);ctx.lineTo(440,cy+9);ctx.fill();ctx.stroke();ctx.fillRect(150,cy-16,12,32);ctx.strokeRect(150,cy-16,12,32)}
     else{ctx.strokeStyle='#ced4da';ctx.setLineDash([4,4]);ctx.strokeRect(160,cy-9,280,18);ctx.setLineDash([])}
     const k=n/2;for(let i=0;i<k;i++){const x=180+i*(240/k);ctx.strokeStyle='#d9480f';ctx.lineWidth=Math.max(2,6-k/8);ctx.beginPath();ctx.ellipse(x,cy,4,18,0,0,7);ctx.stroke()}
-    ctx.strokeStyle='#d9480f';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(180,cy+18);ctx.lineTo(180,300);ctx.lineTo(260,300);ctx.moveTo(420,cy+18);ctx.lineTo(420,300);ctx.lineTo(380,300);ctx.stroke();
-    for(let b=0;b<bat;b++){const bx=262+b*58;ctx.fillStyle='#343a40';ctx.fillRect(bx,286,54,28);ctx.fillStyle='#f08c00';ctx.fillRect(bx,286,18,28);ctx.strokeStyle='#1f2d3a';ctx.lineWidth=2;ctx.strokeRect(bx,286,54,28)}
-    ctx.strokeStyle='#d9480f';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(262+bat*58,300);ctx.lineTo(bat===1?350:380,300);ctx.stroke();
-    // Schalter
-    ctx.fillStyle=ink;ctx.font='12px system-ui,sans-serif';ctx.fillText(on?'Schalter geschlossen':'Schalter offen',300,334);
+    const BX=214,BE=BX+bat*58-4,S1=356,S2=396;
+    ctx.strokeStyle=on?'#f76707':'#d9480f';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(180,cy+18);ctx.lineTo(180,300);ctx.lineTo(BX,300);ctx.moveTo(BE,300);ctx.lineTo(S1,300);ctx.moveTo(S2,300);ctx.lineTo(420,300);ctx.lineTo(420,cy+18);ctx.stroke();
+    for(let b=0;b<bat;b++){const bx=BX+b*58;ctx.fillStyle='#343a40';ctx.fillRect(bx,286,54,28);ctx.fillStyle='#f08c00';ctx.fillRect(bx,286,18,28);ctx.strokeStyle='#1f2d3a';ctx.lineWidth=2;ctx.strokeRect(bx,286,54,28);ctx.fillStyle='#fff';ctx.font='bold 11px system-ui,sans-serif';ctx.fillText(pol>0?'+':'−',bx+5,304);ctx.fillText(pol>0?'−':'+',bx+42,304)}
+    // Schalter: Hebel dreht sich um den linken Kontakt
+    swA+=((on?0:-0.6)-swA)*.25;ctx.fillStyle='#495057';[S1,S2].forEach(x=>{ctx.beginPath();ctx.arc(x,300,5,0,7);ctx.fill()});
+    ctx.strokeStyle='#212529';ctx.lineWidth=4;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(S1,300);ctx.lineTo(S1+(S2-S1+4)*Math.cos(swA),300+(S2-S1+4)*Math.sin(swA));ctx.stroke();ctx.lineCap='butt';
+    // Strom (Ladungen wandern, wenn geschlossen)
+    if(on){const P=[[420,cy+18],[420,300],[S2,300],[S1,300],[BE,300],[BX,300],[180,300],[180,cy+18]],seg=[];let tot=0;for(let i=1;i<P.length;i++){const l=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);seg.push([P[i-1],P[i],tot,l]);tot+=l}
+      const off2=((-performance.now()/1000*60*pol)%22+22)%22;ctx.fillStyle='#ffd43b';for(let s=off2;s<tot;s+=22){const g=seg.find(q=>s<=q[2]+q[3]);if(!g)continue;const u=(s-g[2])/g[3],x=g[0][0]+(g[1][0]-g[0][0])*u,y=g[0][1]+(g[1][1]-g[0][1])*u;if(x>BX-2&&x<BE+2&&Math.abs(y-300)<2)continue;ctx.beginPath();ctx.arc(x,y,3.2,0,7);ctx.fill();ctx.strokeStyle='#e67700';ctx.lineWidth=1;ctx.stroke()}}
+    ctx.fillStyle=ink;ctx.font='12px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText(on?'Schalter geschlossen: Strom fließt':'Schalter offen: kein Strom',(S1+S2)/2,336);ctx.textAlign='left';
     // Büroklammern
     const L=Math.round(lift);clips.forEach((c,i)=>{const up=i<L,x=up?440+(i%4)*8-12:c.x,y=up?cy+22+Math.floor(i/4)*22+(i%4)*3:c.y;ctx.save();ctx.translate(x,y);ctx.rotate(up?Math.PI/2+.2*(i%3-1):c.r);ctx.strokeStyle='#868e96';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(-10,-3);ctx.lineTo(10,-3);ctx.arc(10,0,3,-Math.PI/2,Math.PI/2);ctx.lineTo(-8,3);ctx.arc(-8,0,3,Math.PI/2,-Math.PI/2);ctx.stroke();ctx.restore()});
     ctx.fillStyle='#8f7a5a';ctx.fillRect(180,392,260,8);
@@ -3216,7 +3221,7 @@ function viewEMagnet(m){
   }
   function loop(){if(!alive)return;const w=want();lift+=(w-lift)*.08;if(Math.abs(w-lift)<.05)lift=w;draw();requestAnimationFrame(loop)}
   function info(){$('#einfo').innerHTML=!on?'Ohne Strom ist die Spule kein Magnet. Die Büroklammern bleiben liegen.':`Fließt Strom durch die Spule, entsteht ein <b>Magnetfeld</b>. ${core?'Der Eisennagel verstärkt es stark.':'Ohne Eisenkern ist der Magnet sehr schwach.'} Mehr Windungen und mehr Strom machen den Elektromagneten stärker. Polt man die Batterie um, tauschen Nord- und Südpol.`}
-  $('#sw').onclick=e=>{on=!on;e.currentTarget.textContent=on?'Strom ausschalten':'Strom einschalten';info()};$('#pol').onclick=()=>{pol=-pol;info()};
+  $('#sw').onclick=e=>{on=!on;$('#sw').textContent=on?'Strom ausschalten':'Strom einschalten';info()};$('#cv').addEventListener('click',e=>{const[x,y]=cvPos($('#cv'),e);if(x>340&&x<410&&y>260&&y<320)$('#sw').click()});$('#pol').onclick=()=>{pol=-pol;info()};
   m.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{n=+b.dataset.n;m.querySelectorAll('[data-n]').forEach(x=>x.classList.toggle('pri',x===b))});
   m.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{bat=+b.dataset.b;m.querySelectorAll('[data-b]').forEach(x=>x.classList.toggle('pri',x===b))});
   $('#core').onclick=e=>{core=!core;e.currentTarget.setAttribute('aria-pressed',core);info()};$('#fs').onclick=()=>fullscreen($('#stage'));
