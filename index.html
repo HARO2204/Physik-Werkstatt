@@ -725,15 +725,15 @@ function kreislauf(r,o){
   const lab=(k,x,y)=>{const show=o.all||(o.given||[]).includes(k);
     if(show)return`<text x="${x}" y="${y}" text-anchor="middle" font-size="${fs+1}" font-weight="700" fill="#000">${k}</text>`;
     return`<line x1="${x-52}" y1="${y+3}" x2="${x+52}" y2="${y+3}" stroke="#555" stroke-width="1.2"/>`+(o.sol?`<text x="${x}" y="${y}" text-anchor="middle" font-size="${fs+1}" font-weight="700" fill="#c0392b">${k}</text>`:'')};
-  const xs=[35,265,495];let s=`<svg viewBox="0 0 680 410" width="680" height="410" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto;font-family:inherit">
+  const xs=[35,265,495];let s=`<svg viewBox="0 0 680 445" width="680" height="445" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto;font-family:inherit">
    <defs><marker id="mu" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="${E.up}"/></marker>
    <marker id="md" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="${E.down}"/></marker></defs>`;
   const dash=color?'':' stroke-dasharray="8 5"';
   s+=`<path d="M110 136C140 -10 490 -10 525 136" fill="none" stroke="${E.up}" stroke-width="5" marker-end="url(#mu)"/>`;
-  s+=`<path d="M630 235C690 400 -20 400 50 236" fill="none" stroke="${E.down}" stroke-width="5"${dash} marker-end="url(#md)"/>`;
+  s+=`<path d="M570 314C540 460 190 460 155 316" fill="none" stroke="${E.down}" stroke-width="5"${dash} marker-end="url(#md)"/>`;
   xs.forEach((x,i)=>{s+=`<g transform="translate(${x} 95)">${beakerInner(i,r,color)}</g>`});
   [[172,278],[402,508]].forEach(([a,b])=>{s+=`<line x1="${a}" y1="196" x2="${b}" y2="196" stroke="${E.up}" stroke-width="4" marker-end="url(#mu)"/><line x1="${b}" y1="234" x2="${a}" y2="234" stroke="${E.down}" stroke-width="4"${dash} marker-end="url(#md)"/>`});
-  s+=lab('Schmelzen',225,184)+lab('Verdampfen',455,184)+lab('Erstarren',225,256)+lab('Kondensieren',455,256)+lab('Sublimieren',340,66)+lab('Resublimieren',340,344);
+  s+=lab('Schmelzen',225,184)+lab('Verdampfen',455,184)+lab('Erstarren',225,256)+lab('Kondensieren',455,256)+lab('Sublimieren',340,66)+lab('Resublimieren',340,386);
   xs.forEach((x,i)=>{const cx=x+75,n=NAMES[i][0];
     if(o.all||o.namesGiven)s+=`<text x="${cx}" y="300" text-anchor="middle" font-size="16" font-weight="700" fill="#000">${n}</text>`;
     else s+=`<line x1="${cx-55}" y1="303" x2="${cx+55}" y2="303" stroke="#555" stroke-width="1.2"/>`+(o.sol?`<text x="${cx}" y="299" text-anchor="middle" font-size="16" font-weight="700" fill="#c0392b">${n}</text>`:'')});
