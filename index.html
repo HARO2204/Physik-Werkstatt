@@ -2897,8 +2897,7 @@ function viewBaukasten(m){
     <div class="merke"><b>Merke:</b> Eine Lampe leuchtet nur, wenn sie in einem <b>geschlossenen Stromkreis</b> mit der Batterie liegt. Fließt der Strom über eine Leitung an allen Lampen vorbei, ist das ein <b>Kurzschluss</b>.</div>
     <div class="note">Die orangen Punkte zeigen die technische Stromrichtung: vom Pluspol (+) zum Minuspol (−).</div>
    </div></div></div>`;
-  let E=PRESETS.einfach.map(e=>({...e})),tool='lamp',flow=true,alive=true,off=0;const COLS=6,ROWS=5,g=80;
-  try{const sv=JSON.parse(localStorage.getItem('pw-ck')||'null');if(Array.isArray(sv))E=sv}catch(e){}
+  let E=[],tool='lamp',flow=true,alive=true,off=0;const COLS=6,ROWS=5,g=80;
   const keyE=(a,b)=>[a,b].map(p=>p+'').sort().join('|');
   function draw(){
     const res=solveCircuit(E),bounds=[0,0,COLS-1,ROWS-1];
@@ -2914,7 +2913,7 @@ function viewBaukasten(m){
       else if(tool!=='erase')E.push(CE(a,b,tool,tool==='switch'?{on:true}:{}));
       try{localStorage.setItem('pw-ck',JSON.stringify(E))}catch(e){}draw()});
     const lamps=E.map((e,k)=>({e,k})).filter(x=>x.e.t==='lamp'),litN=lamps.filter(x=>res.lit[x.k]).length,mot=E.some((e,k)=>e.t==='motor'&&res.lit[k]);
-    let st;if(!res.anyBat)st='Keine Batterie<small>Ohne Batterie fließt kein Strom.</small>';
+    let st;if(!E.length)st='Leeres Feld<small>Wähle ein Bauteil und klicke auf eine Linie im Raster. Fang mit der Batterie an!</small>';else if(!res.anyBat)st='Keine Batterie<small>Ohne Batterie fließt kein Strom.</small>';
     else if(res.short)st='<span style="color:var(--bad)">Kurzschluss!</span><small>Der Strom fließt ohne Umweg zurück zur Batterie. Sie wird heiß und ist schnell leer.</small>';
     else if(litN||mot)st=`Stromkreis geschlossen<small>${litN} von ${lamps.length} Lampe${lamps.length===1?'':'n'} leuchte${litN===1?'t':'n'}${mot?', der Motor dreht sich':''}.</small>`;
     else st='Stromkreis offen<small>Es fließt kein Strom durch die Lampen.</small>';
@@ -3052,7 +3051,7 @@ function viewReihe(m){
       h+=task(++nr,'Ist das eine Reihenschaltung oder eine Parallelschaltung?',`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">${c.map(x=>`<div style="border:1.4px solid #000;border-radius:8px;padding:6px;text-align:center;display:flex;flex-direction:column"><div style="flex:1;display:flex;align-items:center;justify-content:center">${drawCircuit(x[0],{g:60,pad:26})}</div><div class="ln" style="line-height:30px">${L(x[1])}</div></div>`).join('')}</div>`)}
     if(o.t2){const rows=[['Wie viele Stromkreise gibt es?','nur einen','für jede Lampe einen eigenen'],['Was passiert, wenn eine Lampe kaputt ist?','alle Lampen gehen aus','die anderen leuchten weiter'],['Wie hell leuchten zwei Lampen?','schwächer als eine allein','etwa gleich hell wie eine allein'],['Ein Beispiel aus dem Alltag','alte Lichterkette','Steckdosen und Lampen im Haus']];
       h+=task(++nr,'Vergleiche die beiden Schaltungen.',`<table><colgroup><col style="width:230px"><col><col></colgroup><thead><tr><th></th><th>Reihenschaltung</th><th>Parallelschaltung</th></tr></thead><tbody>${rows.map(x=>`<tr><td><b>${x[0]}</b></td><td style="height:44px">${L(x[1])}</td><td>${L(x[2])}</td></tr>`).join('')}</tbody></table>`)}
-    if(o.t3)h+=task(++nr,'Richtig oder falsch? Kreuze an.',tfTable(shuffle(RPTF,r).slice(0,6),sol));
+    if(o.t3)h+=task(++nr,'Richtig oder falsch? Kreuze an.',tfTable(shuffle(RPTF,r).slice(0,5),sol));
     if(o.t4)h+=task(++nr,'Bei einer alten Lichterkette geht eine Lampe kaputt, und plötzlich ist die ganze Kette dunkel. Wie sind die Lampen geschaltet? Begründe.',answer(sol,'In Reihe. Es gibt nur einen Stromkreis. Ist eine Lampe kaputt, ist er unterbrochen und keine Lampe leuchtet mehr.',3));
     return h||'<p style="color:#666">Wähle rechts mindestens eine Aufgabe aus.</p>';}});
 }
