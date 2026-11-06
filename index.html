@@ -1099,16 +1099,17 @@ function viewWue(m){
     <label class="ck"><input type="checkbox" id="o-t1" checked> Beispiele zuordnen</label>
     <label style="margin-left:22px">Anzahl<select id="o-n1"><option>6</option><option selected>9</option><option>12</option></select></label>
     <label class="ck"><input type="checkbox" id="o-t2" checked> Gute und schlechte Wärmeleiter</label>
-    <label class="ck"><input type="checkbox" id="o-t3" checked> Richtig oder falsch</label>
+    <label class="ck"><input type="checkbox" id="o-t3"> Richtig oder falsch</label>
     <label style="margin-left:22px">Anzahl<select id="o-n3"><option>4</option><option selected>6</option><option>8</option></select></label>
     <label class="ck"><input type="checkbox" id="o-t4"> Arten erklären</label>
+    <div class="note">Voreingestellt passt das Blatt auf eine Seite. Für ein zweites Blatt „Richtig oder falsch“ und „Arten erklären“ anhaken und die oberen Aufgaben abwählen.</div>
     <label class="ck"><input type="checkbox" id="o-color" checked> farbig</label></div>`,
    render(o,sol,r){
     let nr=0,h='';const X=b=>`<span class="box">${sol&&b?'✗':''}</span>`;const K=Object.keys(WUE);
     if(o.t0){const P=shuffle(['Wärmeleitung','Wärmeströmung','Wärmestrahlung'],r);
       h+=task(++nr,'Welche Art der Wärmeübertragung zeigt das Bild? Schreibe sie darunter.',`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">${P.map((k,i)=>`<div><div style="display:flex;justify-content:center">${wueIcon(k,o.color).replace('width="130" height="122"','width="190" height="178"')}</div><div style="display:flex;gap:6px;align-items:flex-end"><b>${'abc'[i]})</b><div class="ln" style="flex:1;line-height:30px">${sol?`<span class="sv">${k}</span>`:''}</div></div></div>`).join('')}</div>`)}
     if(o.t1){const n=+o.n1,per=n/3;const ex=shuffle(K.flatMap(k=>shuffle(WUEX.filter(e=>e[1]===k),r).slice(0,Math.round(per))),r);
-      h+=task(++nr,'Welche Art der Wärmeübertragung ist das? Kreuze an.',`<table><colgroup><col style="width:30px"><col><col style="width:96px"><col style="width:96px"><col style="width:96px"></colgroup><thead><tr><th></th><th>Beispiel</th>${K.map(k=>`<th style="text-align:center;font-size:13px">${k}</th>`).join('')}</tr></thead><tbody>${ex.map((e,i)=>`<tr><td>${i+1}</td><td>${e[0]}</td>${K.map(k=>`<td style="text-align:center">${X(e[1]===k)}</td>`).join('')}</tr>`).join('')}</tbody></table>`)}
+      h+=task(++nr,'Welche Art der Wärmeübertragung ist das? Kreuze an.',`<table><colgroup><col style="width:30px"><col><col style="width:96px"><col style="width:96px"><col style="width:96px"></colgroup><thead><tr><th></th><th>Beispiel</th>${K.map(k=>`<th style="text-align:center;font-size:13px;line-height:1.25">${k.replace('Wärme','Wärme-<br>')}</th>`).join('')}</tr></thead><tbody>${ex.map((e,i)=>`<tr><td>${i+1}</td><td>${e[0]}</td>${K.map(k=>`<td style="text-align:center">${X(e[1]===k)}</td>`).join('')}</tr>`).join('')}</tbody></table>`)}
     if(o.t2){const all=shuffle(LEITER.gut.slice(0,4).concat(LEITER.schlecht.slice(0,5)),r);
       h+=task(++nr,'Sortiere die Stoffe: Welche leiten Wärme gut, welche schlecht?',`<div class="bank" style="margin:0 0 10px">${all.join(' · ')}</div><table><thead><tr><th>leitet Wärme gut</th><th>leitet Wärme schlecht</th></tr></thead><tbody><tr><td style="height:${sol?'auto':'90px'};vertical-align:top">${sol?`<span class="sv">${all.filter(x=>LEITER.gut.includes(x)).join(', ')}</span>`:''}</td><td style="vertical-align:top">${sol?`<span class="sv">${all.filter(x=>LEITER.schlecht.includes(x)).join(', ')}</span>`:''}</td></tr></tbody></table>`)}
     if(o.t3){const st=shuffle(WUETF,r).slice(0,+o.n3);
