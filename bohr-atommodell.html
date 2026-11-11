@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Das Atommodell von Niels Bohr – Stundenpaket</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --ink:#1d2433; --muted:#5b6475; --line:#d9dee8; --bg:#f4f6fa; --card:#fff;
+  --acc:#2a5bd7; --acc2:#e8eefc; --p:#d94848; --n:#8a93a3; --e:#2a5bd7; --sol:#c4261d;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.45}
+header{background:linear-gradient(120deg,#1b2a55,#2a5bd7);color:#fff;padding:18px 22px 0}
+header h1{margin:0 0 4px;font-size:1.45rem}
+header p{margin:0 0 14px;opacity:.85;font-size:.95rem}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button{border:0;background:rgba(255,255,255,.14);color:#fff;padding:9px 14px;border-radius:10px 10px 0 0;font-size:.95rem;cursor:pointer}
+nav button.on{background:var(--bg);color:var(--ink);font-weight:600}
+main{max-width:1100px;margin:0 auto;padding:20px}
+.tab{display:none}.tab.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:16px}
+.card h2{margin:0 0 10px;font-size:1.2rem}
+.card h3{margin:16px 0 6px;font-size:1.02rem}
+table.plan{width:100%;border-collapse:collapse;font-size:.92rem}
+table.plan th,table.plan td{border:1px solid var(--line);padding:7px 9px;vertical-align:top;text-align:left}
+table.plan th{background:var(--acc2)}
+.pill{display:inline-block;background:var(--acc2);color:var(--acc);border-radius:20px;padding:1px 9px;font-size:.8rem;font-weight:600;margin:1px 2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:800px){.grid2{grid-template-columns:1fr}}
+.note{background:#fff8e6;border-left:4px solid #f0b429;padding:9px 12px;border-radius:6px;margin:10px 0;font-size:.93rem}
+.tl{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0}
+.tl div{flex:1 1 150px;background:var(--acc2);border-radius:10px;padding:9px 11px;font-size:.88rem}
+.tl b{display:block;color:var(--acc)}
+/* Toolbar */
+.toolbar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:.93rem}
+.toolbar label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.toolbar input[type=text]{width:260px;padding:5px 8px;border:1px solid var(--line);border-radius:6px}
+.btn{border:0;background:var(--acc);color:#fff;padding:8px 14px;border-radius:9px;font-size:.93rem;cursor:pointer}
+.btn.sec{background:#e3e8f3;color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:default}
+#printMsg{font-size:.85rem;color:var(--muted)}
+/* A4 sheets */
+.sheet{width:210mm;height:297mm;margin:0 auto 18px;background:#fff;box-shadow:0 2px 14px rgba(0,0,0,.12);padding:12mm 14mm 10mm;overflow:hidden;position:relative;font-size:11pt;color:#111}
+.sheet h1{font-size:17pt;margin:0}
+.sheet .head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #111;padding-bottom:4px;margin-bottom:8px}
+.sheet .head .nm{font-size:10pt}
+.sheet .sub{font-size:9.5pt;color:#444;margin:-4px 0 6px}
+.sheet .task{margin:0 0 9px}
+.sheet .task>.t{font-weight:700;margin-bottom:4px}
+.sheet .t .num{display:inline-block;background:#111;color:#fff;border-radius:50%;width:20px;height:20px;text-align:center;line-height:20px;font-size:10pt;margin-right:6px}
+.wordbox{border:1.5px dashed #555;border-radius:6px;padding:4px 8px;font-size:10pt;text-align:center;margin:4px 0 6px;word-spacing:10px}
+.gap{display:inline-block;min-width:26mm;border-bottom:1px solid #111;text-align:center;line-height:1.2}
+.gap .s{color:var(--sol);font-weight:600;visibility:hidden}
+.show-sol .gap .s,.show-sol .s{visibility:visible}
+.s{color:var(--sol);font-weight:600;visibility:hidden}
+.cloze{line-height:1.95;font-size:10.8pt}
+table.ws{border-collapse:collapse;width:100%;font-size:10.5pt}
+table.ws th,table.ws td{border:1px solid #333;padding:3px 6px;text-align:center;height:7.4mm}
+table.ws th{background:#eee}
+.lines{margin-top:3px}
+.lines div{border-bottom:1px solid #999;height:8.5mm}
+.no-lines .lines{display:none}
+.merk{border:2.5px solid #111;border-radius:8px;padding:8px 12px;font-size:10.8pt}
+.merk h2{font-size:13pt;margin:0 0 6px}
+.merk ul{margin:2px 0 6px;padding-left:20px}
+.merk li{margin:2px 0}
+.qrbox{position:absolute;right:14mm;top:22mm;text-align:center;font-size:7.5pt;color:#444;display:none}
+.qrbox.on{display:block}
+.qrbox canvas,.qrbox img{width:22mm!important;height:22mm!important}
+table.ws.rf td{height:6.4mm;text-align:left;padding:1px 8px}
+table.ws.rf td.c{text-align:center;width:10mm}
+.atomgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.atomgrid .cell{border:1px solid #333;border-radius:6px;padding:4px;text-align:center;font-size:10pt}
+.foot{position:absolute;bottom:6mm;left:14mm;right:14mm;font-size:8pt;color:#777;display:flex;justify-content:space-between}
+.preview-hint{font-size:.85rem;color:var(--muted);text-align:center;margin:-8px 0 18px}
+/* Simulation */
+.simwrap{display:grid;grid-template-columns:minmax(280px,1.1fr) 1fr;gap:16px;align-items:start}
+@media(max-width:800px){.simwrap{grid-template-columns:1fr}}
+.simsvg{width:100%;max-width:460px;display:block;margin:0 auto;background:radial-gradient(circle,#f7f9ff,#eaf0ff);border-radius:50%}
+.subtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.subtabs button{border:1px solid var(--line);background:#fff;padding:8px 14px;border-radius:20px;cursor:pointer;font-size:.93rem}
+.subtabs button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.sim{display:none}.sim.on{display:block}
+.elsel{display:flex;align-items:center;gap:10px;margin:6px 0 12px}
+.elsel input[type=range]{flex:1}
+.bigsym{font-size:2.4rem;font-weight:800;line-height:1}
+.info td{padding:3px 10px 3px 0}
+.info td:first-child{color:var(--muted)}
+.shellbtns{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.spectrum{height:46px;border-radius:8px;position:relative;background:#111;margin-top:6px;overflow:hidden}
+.spectrum .ln{position:absolute;top:0;bottom:0;width:3px}
+.speclab{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted)}
+.log{font-size:.88rem;max-height:150px;overflow:auto;background:#f7f8fb;border-radius:8px;padding:6px 10px;margin-top:8px}
+.ctl{display:grid;grid-template-columns:auto 1fr auto auto;gap:6px 10px;align-items:center;margin:10px 0}
+.ctl .cnt{font-size:1.3rem;font-weight:700;min-width:28px;text-align:center}
+.feedback{padding:9px 12px;border-radius:8px;margin-top:8px;font-weight:600;display:none}
+.feedback.ok{display:block;background:#e3f6e8;color:#1c6b33}
+.feedback.no{display:block;background:#fde8e8;color:#9b1c1c}
+@media print{
+  @page{size:A4;margin:0}
+  body{background:#fff}
+  header,nav,.toolbar,.preview-hint,.noprint,.tab:not(.on){display:none!important}
+  main{padding:0;max-width:none}
+  .sheet{box-shadow:none;margin:0;page-break-after:always;break-after:page}
+  .sheet.skip{display:none}
+  .card{border:0}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>⚛️ Das Atommodell von Niels Bohr</h1>
+  <p>Stundenpaket Physik · Mittelschule (4. Klasse) · 50 Minuten · Planung, Hintergrund, Simulation, Arbeitsblatt, Übungsblatt</p>
+  <nav id="nav">
+    <button data-t="plan" class="on">📋 Stundenplanung</button>
+    <button data-t="wissen">📚 Hintergrundwissen</button>
+    <button data-t="sim">🎮 Simulation</button>
+    <button data-t="ab">📝 Arbeitsblatt + Merktext</button>
+    <button data-t="ueb">✏️ Übungsblatt</button>
+  </nav>
+</header>
+<main>
+
+<!-- ================= STUNDENPLANUNG ================= -->
+<section class="tab on" id="plan">
+  <div class="card">
+    <h2>Überblick</h2>
+    <div class="grid2">
+      <div>
+        <h3>Lernziele – die Schülerinnen und Schüler …</h3>
+        <ul>
+          <li>beschreiben den Aufbau eines Atoms nach Bohr (Kern mit Protonen und Neutronen, Elektronen auf Schalen).</li>
+          <li>verteilen die Elektronen der ersten 20 Elemente auf die Schalen (2 – 8 – 8 – 2).</li>
+          <li>erklären, dass Elektronen beim Sprung zwischen Schalen Energie aufnehmen oder als Licht abgeben.</li>
+          <li>beantworten die Leitfrage: <i>„Warum leuchtet Feuerwerk in verschiedenen Farben?“</i></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Vorwissen</h3>
+        <ul>
+          <li>Teilchenmodell, Begriff „Atom“</li>
+          <li>Rutherford: kleiner, positiver Kern – Elektronen in der Hülle</li>
+          <li>Ladungen: Proton +, Elektron −, Neutron neutral</li>
+        </ul>
+        <h3>Material</h3>
+        <ul>
+          <li>Beamer/Tafel, iPads (Simulation per QR-Code)</li>
+          <li>Arbeitsblatt, Merktext, Übungsblatt (je 1 × A4)</li>
+          <li>optional: Seil/Kreide für das „Lebende Atommodell“, Farbkarten (rot, blau, violett)</li>
+          <li>optional: Bild/Video von Feuerwerk; Brenner + Magnesiastäbchen + Kochsalz</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Stundenverlauf (50 Minuten)</h2>
+    <table class="plan">
+      <tr><th style="width:70px">Zeit</th><th style="width:120px">Phase</th><th>Inhalt und Aktivität</th><th style="width:140px">Sozialform / Material</th></tr>
+      <tr><td>0–5'</td><td><b>Einstieg</b></td><td>Foto oder kurzes Video von Feuerwerk zeigen (alternativ Demo: Kochsalz in der Brennerflamme → gelb).<br>Leitfrage an die Tafel: <b>„Warum leuchtet Feuerwerk in verschiedenen Farben?“</b> Vermutungen sammeln und stehen lassen.</td><td>Unterrichtsgespräch<br><span class="pill">Beamer</span></td></tr>
+      <tr><td>5–10'</td><td><b>Anknüpfen</b></td><td>Wiederholung Rutherford: winziger Kern, Elektronen außen herum.<br>Problem: Warum fallen die Elektronen nicht in den Kern? → <b>Bohrs Idee (1913):</b> Elektronen dürfen nur auf bestimmten Bahnen (Schalen) sein. Dort verlieren sie keine Energie.</td><td>Lehrervortrag, Tafelbild</td></tr>
+      <tr><td>10–18'</td><td><b>Erarbeitung 1</b><br>Schalenmodell</td><td>Am Beamer mit dem <i>Atom-Baukasten</i> gemeinsam H, He, Li, C, Ne, Na aufbauen. Regel entdecken lassen: 1. Schale max. 2, 2. Schale max. 8, 3. Schale max. 8 (bis Calcium).<br><b>Bewegungspause „Lebendes Atommodell“</b> (siehe unten).</td><td>Klasse<br><span class="pill">Simulation</span></td></tr>
+      <tr><td>18–30'</td><td><b>Erarbeitung 2</b><br>iPads</td><td>Partnerarbeit mit der Simulation (QR-Code):<br>① <i>Atom-Baukasten</i>: 3 Elemente selbst ansehen und Besetzung notieren<br>② <i>Elektronensprung</i>: Elektron anheben, Licht beobachten. Welche Farben entstehen?<br>③ <i>Challenge</i>: so viele Atome richtig befüllen wie möglich</td><td>Partnerarbeit<br><span class="pill">iPads</span></td></tr>
+      <tr><td>30–40'</td><td><b>Sicherung</b></td><td>Arbeitsblatt bearbeiten (Lückentext, Beschriften, Tabelle). Vergleich im Plenum.<br>Merktext ins Heft schreiben.</td><td>Einzelarbeit<br><span class="pill">Arbeitsblatt</span> <span class="pill">Merktext</span></td></tr>
+      <tr><td>40–47'</td><td><b>Übung</b></td><td>Übungsblatt Aufgabe 1 und 2 beginnen, Rest als Hausübung.<br>Schnelle Kinder: Knobelaufgabe ★.</td><td>Einzelarbeit<br><span class="pill">Übungsblatt</span></td></tr>
+      <tr><td>47–50'</td><td><b>Abschluss</b></td><td>Zurück zur Leitfrage. <b>Exit-Ticket</b> (1 Satz): <i>„Feuerwerk leuchtet bunt, weil …“</i><br>Erwartung: <i>… Elektronen auf eine äußere Schale springen und beim Zurückspringen Energie als Licht abgeben. Jedes Element gibt andere Farben ab.</i></td><td>Einzelarbeit</td></tr>
+    </table>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>🧍 Bewegungspause: Lebendes Atommodell</h2>
+      <ol>
+        <li>Zwei Kreise am Boden (Seil oder Kreide), in der Mitte ein Sessel = Kern.</li>
+        <li>Lehrkraft nennt ein Element (z. B. Kohlenstoff = 6). Entsprechend viele Kinder sind „Elektronen“ und stellen sich auf die Kreise: <b>innen max. 2</b>, <b>außen max. 8</b>. Die Klasse kontrolliert.</li>
+        <li><b>Energiekarte:</b> Ein Elektron bekommt eine Karte („Energie!“) und springt auf einen Kreis weiter außen.</li>
+        <li>Beim Zurückspringen hält es eine <b>Farbkarte</b> hoch = es gibt Licht ab. Großer Sprung = blau/violett, kleiner Sprung = rot.</li>
+      </ol>
+      <div class="note">Dauer ca. 4 Minuten. Mit 3 Kreisen geht es bis Argon (18).</div>
+    </div>
+    <div class="card">
+      <h2>🖊️ Tafelbild</h2>
+      <svg viewBox="0 0 420 220" style="width:100%;max-width:420px">
+        <text x="10" y="20" font-size="15" font-weight="700">Atommodell von Niels Bohr (1913)</text>
+        <circle cx="110" cy="125" r="35" fill="none" stroke="#333" stroke-width="1.5"/>
+        <circle cx="110" cy="125" r="70" fill="none" stroke="#333" stroke-width="1.5"/>
+        <circle cx="110" cy="125" r="11" fill="#d94848"/>
+        <text x="110" y="129" font-size="10" text-anchor="middle" fill="#fff">Kern</text>
+        <circle cx="110" cy="90" r="5" fill="#2a5bd7"/><circle cx="110" cy="160" r="5" fill="#2a5bd7"/>
+        <circle cx="40" cy="125" r="5" fill="#2a5bd7"/><circle cx="180" cy="125" r="5" fill="#2a5bd7"/>
+        <circle cx="160" cy="75" r="5" fill="#2a5bd7"/><circle cx="60" cy="175" r="5" fill="#2a5bd7"/>
+        <text x="150" y="112" font-size="11">1. Schale</text>
+        <text x="160" y="200" font-size="11">2. Schale</text>
+        <text x="215" y="60" font-size="12">• Kern: Protonen (+), Neutronen</text>
+        <text x="215" y="80" font-size="12">• Elektronen (−) auf Schalen</text>
+        <text x="215" y="100" font-size="12">• max.: 2 – 8 – 8 Elektronen</text>
+        <text x="215" y="125" font-size="12">• Energie aufnehmen → Sprung</text>
+        <text x="230" y="141" font-size="12">nach außen</text>
+        <text x="215" y="165" font-size="12">• Zurückspringen → Licht</text>
+        <text x="215" y="190" font-size="12" font-style="italic">(Beispiel: Kohlenstoff C, 6 e⁻)</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Differenzierung und Varianten</h2>
+    <div class="grid2">
+      <div>
+        <h3>Unterstützung</h3>
+        <ul>
+          <li>Wortkasten beim Lückentext, Periodensystem-Ausschnitt (H–Ca) austeilen</li>
+          <li>Übungsblatt: Aufgabe 1 mit der Simulation kontrollieren lassen</li>
+          <li>Antwortlinien einschalten (Schalter über dem Blatt)</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Erweiterung</h3>
+        <ul>
+          <li>Knobelaufgabe ★ auf dem Übungsblatt</li>
+          <li>In der Simulation herausfinden: Welche Sprünge erzeugen sichtbares Licht? (alle, die auf der 2. Schale enden)</li>
+          <li>Recherche: Welche Stoffe färben Feuerwerk rot, grün, gelb?</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note"><b>Doppelstunde?</b> Dann Flammenfärbung als Lehrerdemo ausbauen (nur mit Schutzbrille, Kochsalz ist unbedenklich; andere Salze nur nach den Sicherheitsregeln eurer Schule) und das Übungsblatt komplett in der Stunde lösen.</div>
+  </div>
+</section>
+
+<!-- ================= HINTERGRUNDWISSEN ================= -->
+<section class="tab" id="wissen">
+  <div class="card">
+    <h2>Wie es zum Bohrschen Atommodell kam</h2>
+    <div class="tl">
+      <div><b>um 1803 · Dalton</b>Atome sind winzige, unteilbare Kugeln.</div>
+      <div><b>1897 · Thomson</b>Entdeckt das Elektron. „Rosinenkuchen-Modell“: Elektronen stecken in einer positiven Masse.</div>
+      <div><b>1911 · Rutherford</b>Goldfolienversuch: Fast die ganze Masse sitzt in einem winzigen, positiven Kern. Das Atom ist fast leer.</div>
+      <div><b>1913 · Bohr</b>Elektronen auf festen Bahnen (Schalen) mit bestimmter Energie.</div>
+      <div><b>ab 1926 · Schrödinger u. a.</b>Orbitalmodell: Man kann nur angeben, <i>wo ein Elektron wahrscheinlich ist</i>.</div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>Das Problem mit Rutherfords Modell</h2>
+      <p>Nach den Gesetzen der klassischen Physik müsste ein kreisendes, geladenes Elektron ständig Energie abstrahlen. Es würde immer langsamer werden und in einer Spirale in den Kern stürzen. Atome wären also nicht stabil – das widerspricht der Erfahrung.</p>
+      <h2>Bohrs Lösung (Postulate)</h2>
+      <ol>
+        <li><b>Erlaubte Bahnen:</b> Elektronen bewegen sich nur auf ganz bestimmten Kreisbahnen. Auf diesen Bahnen strahlen sie <i>keine</i> Energie ab.</li>
+        <li><b>Energiestufen:</b> Jede Bahn gehört zu einer festen Energie. Je weiter außen, desto höher die Energie.</li>
+        <li><b>Quantensprung:</b> Ein Elektron kann von einer Bahn auf eine andere springen. Dabei nimmt es genau die Energiedifferenz auf oder gibt sie als Licht (Photon) ab. Großer Sprung → energiereiches Licht (blau/violett, UV); kleiner Sprung → energiearmes Licht (rot, Infrarot).</li>
+      </ol>
+      <p>Niels Bohr (1885–1962) war ein dänischer Physiker. Für seine Arbeiten zum Atombau erhielt er 1922 den Nobelpreis für Physik.</p>
+    </div>
+    <div class="card">
+      <h2>Schalenmodell für die Schule</h2>
+      <p>Die Bahnen werden zu <b>Schalen</b> zusammengefasst und von innen nach außen K, L, M, N (oder 1, 2, 3, 4) genannt.</p>
+      <table class="plan">
+        <tr><th>Schale</th><th>max. Elektronen (2·n²)</th><th>vereinfacht bis Calcium</th></tr>
+        <tr><td>K (1)</td><td>2</td><td>2</td></tr>
+        <tr><td>L (2)</td><td>8</td><td>8</td></tr>
+        <tr><td>M (3)</td><td>18</td><td>8, dann wird N befüllt</td></tr>
+        <tr><td>N (4)</td><td>32</td><td>K: 1, Ca: 2</td></tr>
+      </table>
+      <p style="margin-top:10px">Für die ersten 20 Elemente gilt die Merkregel <b>2 – 8 – 8 – 2</b>. Dass die M-Schale eigentlich 18 Elektronen fassen kann, wird erst ab Element 21 (Scandium) wichtig.</p>
+      <p>Die Elektronen auf der äußersten Schale heißen <b>Außenelektronen</b> (Valenzelektronen). Sie bestimmen, wie ein Element chemisch reagiert. Edelgase (He, Ne, Ar) haben eine volle Außenschale und reagieren kaum.</p>
+      <p><b>Größenvergleich:</b> Wäre der Atomkern so groß wie ein Stecknadelkopf (1 mm), wäre das ganze Atom etwa 100 m groß – ungefähr ein Fußballfeld.</p>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>Licht und Spektrallinien</h2>
+      <p>Bohrs Modell erklärt, warum Wasserstoff nur Licht ganz bestimmter Farben aussendet (Linienspektrum). Die sichtbaren Linien entstehen bei Sprüngen <b>auf die 2. Schale</b>:</p>
+      <table class="plan">
+        <tr><th>Sprung</th><th>Wellenlänge</th><th>Farbe</th></tr>
+        <tr><td>3 → 2</td><td>656 nm</td><td><span style="color:#e00000">■</span> rot</td></tr>
+        <tr><td>4 → 2</td><td>486 nm</td><td><span style="color:#00c0ff">■</span> türkis-blau</td></tr>
+        <tr><td>5 → 2</td><td>434 nm</td><td><span style="color:#3a00ff">■</span> blauviolett</td></tr>
+        <tr><td>6 → 2</td><td>410 nm</td><td><span style="color:#7a00d6">■</span> violett</td></tr>
+      </table>
+      <p style="margin-top:8px">Sprünge auf die 1. Schale sind so groß, dass unsichtbares UV-Licht entsteht. Sprünge auf die 3. Schale geben Infrarot ab.</p>
+      <h3>Flammenfärbung und Feuerwerk</h3>
+      <p>Jedes Element hat eigene Energiestufen und deshalb eigene Farben: Natrium leuchtet gelb, Lithium und Strontium rot, Kupfer grün-blau, Kalium blassviolett, Barium grün. So wird Feuerwerk bunt – und so können Forscher sogar herausfinden, aus welchen Stoffen Sterne bestehen.</p>
+    </div>
+    <div class="card">
+      <h2>Grenzen des Modells</h2>
+      <ul>
+        <li>Die Energiewerte stimmen genau nur für Wasserstoff (1 Elektron).</li>
+        <li>Elektronen bewegen sich nicht wirklich auf Kreisbahnen wie Planeten. Heute beschreibt man sie mit Aufenthaltswahrscheinlichkeiten (Orbitale).</li>
+        <li>Trotzdem ist das Modell sehr nützlich: Es erklärt Linienspektren, Flammenfarben und den Aufbau des Periodensystems.</li>
+      </ul>
+      <h2>Typische Fehlvorstellungen</h2>
+      <ul>
+        <li><b>„Die Schalen sind feste Hüllen.“</b> → Schalen sind Energiestufen, keine Wände.</li>
+        <li><b>„Das Atom ist voll mit Teilchen.“</b> → Das Atom ist fast leer.</li>
+        <li><b>„Das Elektron fliegt langsam zur nächsten Schale.“</b> → Der Sprung passiert ohne Zwischenstufen.</li>
+        <li><b>„Elektronen sind so groß wie Protonen.“</b> → Ein Proton ist etwa 1800-mal schwerer als ein Elektron. In Zeichnungen sind die Größen nicht maßstabsgetreu.</li>
+        <li><b>„Ein Modell ist ein Foto vom Atom.“</b> → Modelle sind Denkhilfen und werden verbessert, wenn neue Beobachtungen kommen.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SIMULATION ================= -->
+<section class="tab" id="sim">
+  <div class="subtabs">
+    <button data-s="bau" class="on">① Atom-Baukasten</button>
+    <button data-s="sprung">② Elektronensprung &amp; Licht</button>
+    <button data-s="chal">③ Challenge</button>
+  </div>
+
+  <div class="sim on card" id="sim-bau">
+    <div class="simwrap">
+      <svg class="simsvg" id="bauSvg" viewBox="-200 -200 400 400"></svg>
+      <div>
+        <div class="elsel">
+          <button class="btn sec" id="elMinus">−</button>
+          <input type="range" id="elRange" min="1" max="20" value="6">
+          <button class="btn sec" id="elPlus">+</button>
+        </div>
+        <div style="display:flex;gap:14px;align-items:center">
+          <div class="bigsym" id="elSym">C</div>
+          <div><div style="font-size:1.25rem;font-weight:700" id="elName">Kohlenstoff</div><div style="color:var(--muted)">Ordnungszahl <span id="elZ">6</span></div></div>
+        </div>
+        <table class="info" style="margin-top:10px">
+          <tr><td><span style="color:var(--p)">●</span> Protonen</td><td id="iP"></td></tr>
+          <tr><td><span style="color:var(--n)">●</span> Neutronen</td><td id="iN"></td></tr>
+          <tr><td><span style="color:var(--e)">●</span> Elektronen</td><td id="iE"></td></tr>
+          <tr><td>Besetzung</td><td id="iB"></td></tr>
+          <tr><td>Außenelektronen</td><td id="iA"></td></tr>
+        </table>
+        <div class="note" id="elNote" style="display:none"></div>
+        <label style="display:flex;gap:6px;align-items:center;margin-top:8px"><input type="checkbox" id="spin" checked> Elektronen kreisen lassen</label>
+        <p style="font-size:.85rem;color:var(--muted)">Hinweis: Der Kern ist in Wirklichkeit etwa 100 000-mal kleiner als das Atom.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sim card" id="sim-sprung">
+    <div class="simwrap">
+      <svg class="simsvg" id="hSvg" viewBox="-200 -200 400 400"></svg>
+      <div>
+        <h3 style="margin-top:0">Wasserstoff-Atom (1 Elektron)</h3>
+        <p style="margin:4px 0">Gib dem Elektron Energie! Es springt auf eine äußere Schale und fällt danach wieder zurück. Dabei sendet es Licht aus.</p>
+        <div class="shellbtns" id="liftBtns"></div>
+        <div style="font-size:.9rem">Elektron ist auf Schale <b id="hNow">1</b></div>
+        <div style="margin-top:10px;font-weight:600">Gesammeltes Licht (sichtbarer Bereich):</div>
+        <div class="spectrum" id="spec"></div>
+        <div class="speclab"><span>400 nm violett</span><span>blau</span><span>grün</span><span>gelb</span><span>rot 700 nm</span></div>
+        <div class="log" id="hLog"><i>Noch keine Sprünge.</i></div>
+        <button class="btn sec" id="specReset" style="margin-top:8px">Zurücksetzen</button>
+        <div class="note" style="margin-top:10px"><b>Forscherfrage:</b> Welche Sprünge erzeugen sichtbares Licht? Welche Farbe entsteht beim größten sichtbaren Sprung?</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sim card" id="sim-chal">
+    <div class="simwrap">
+      <svg class="simsvg" id="cSvg" viewBox="-200 -200 400 400"></svg>
+      <div>
+        <h3 style="margin-top:0">Befülle das Atom richtig!</h3>
+        <div style="display:flex;gap:14px;align-items:center">
+          <div class="bigsym" id="cSym">?</div>
+          <div><div style="font-size:1.2rem;font-weight:700" id="cName"></div><div style="color:var(--muted)"><span id="cE"></span> Elektronen</div></div>
+        </div>
+        <div class="ctl" id="cCtl"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" id="cCheck">Überprüfen</button>
+          <button class="btn sec" id="cNext">Nächstes Atom</button>
+        </div>
+        <div class="feedback" id="cFb"></div>
+        <p style="font-size:1.05rem;margin-top:12px">Punkte: <b id="cScore">0</b> · Serie: <b id="cStreak">0</b> 🔥</p>
+        <p style="font-size:.85rem;color:var(--muted)">Regel: innen max. 2, dann max. 8, dann max. 8. Erst wenn eine Schale voll ist, kommt die nächste dran.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ARBEITSBLATT ================= -->
+<section class="tab" id="ab">
+  <div class="toolbar noprint" data-for="ab">
+    <label><input type="checkbox" class="optLines" checked> Antwortlinien</label>
+    <label><input type="checkbox" class="optSol"> Lösungen einblenden</label>
+    <label><input type="checkbox" class="optMerk" checked> Merktext-Blatt mitdrucken</label>
+    <label>QR-Link: <input type="text" class="optQR" value="https://haro2204.github.io/Physik-Werkstatt/bohr-atommodell.html#sim" placeholder="Link zur Simulation"></label>
+    <button class="btn printBtn">🖨️ Drucken</button>
+    <span class="printMsg" id="printMsg"></span>
+  </div>
+  <div class="preview-hint">Vorschau in A4. Jedes Blatt passt auf eine Seite.</div>
+
+  <div class="sheet" id="abSheet">
+    <div class="head"><h1>Das Atommodell von Niels Bohr</h1><div class="nm">Name: ____________________ Datum: ________</div></div>
+    <div class="qrbox"><div class="qr"></div>Simulation</div>
+
+    <div class="task">
+      <div class="t"><span class="num">1</span>Ergänze den Lückentext mit den Wörtern aus dem Kasten.</div>
+      <div class="wordbox">Kern · Licht · Energie · Schalen · Elektronen · Neutronen · Bohr · Protonen</div>
+      <div class="cloze">
+        Der dänische Physiker Niels <span class="gap"><span class="s">Bohr</span></span> stellte 1913 ein neues Atommodell vor.
+        In der Mitte liegt der <span class="gap"><span class="s">Kern</span></span>. Er besteht aus positiv geladenen
+        <span class="gap"><span class="s">Protonen</span></span> und ungeladenen <span class="gap"><span class="s">Neutronen</span></span>.
+        Die negativ geladenen <span class="gap"><span class="s">Elektronen</span></span> befinden sich auf bestimmten Bahnen, den
+        <span class="gap"><span class="s">Schalen</span></span>. Nimmt ein Elektron <span class="gap"><span class="s">Energie</span></span> auf,
+        springt es auf eine Schale weiter außen. Springt es zurück, gibt es die Energie als <span class="gap"><span class="s">Licht</span></span> ab.
+      </div>
+    </div>
+
+    <div class="task">
+      <div class="t"><span class="num">2</span>Beschrifte das Atommodell.</div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <svg id="abAtom" viewBox="0 0 420 250" style="width:118mm;height:68mm"></svg>
+        <div style="font-size:10.5pt;flex:1">
+          Um welches Element handelt es sich?<br><span style="font-size:9pt;color:#555">Tipp: Zähle die Protonen.</span>
+          <div style="border-bottom:1px solid #111;height:9mm;margin-top:3mm"><span class="s" style="line-height:9mm">Kohlenstoff (C)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="task">
+      <div class="t"><span class="num">3</span>Wie viele Elektronen passen höchstens auf die Schalen? (gilt bis Calcium)</div>
+      <table class="ws" style="width:70%">
+        <tr><th>Schale</th><th>1. Schale (K)</th><th>2. Schale (L)</th><th>3. Schale (M)</th></tr>
+        <tr><td><b>max.</b></td><td><span class="s">2</span></td><td><span class="s">8</span></td><td><span class="s">8</span></td></tr>
+      </table>
+    </div>
+
+    <div class="task">
+      <div class="t"><span class="num">4</span>Vervollständige die Tabelle. Nutze das Periodensystem.</div>
+      <table class="ws">
+        <tr><th>Element</th><th>Protonen</th><th>Elektronen</th><th>1. Schale</th><th>2. Schale</th><th>3. Schale</th></tr>
+        <tr><td>Helium (He)</td><td>2</td><td><span class="s">2</span></td><td><span class="s">2</span></td><td><span class="s">–</span></td><td><span class="s">–</span></td></tr>
+        <tr><td>Sauerstoff (O)</td><td><span class="s">8</span></td><td>8</td><td><span class="s">2</span></td><td><span class="s">6</span></td><td><span class="s">–</span></td></tr>
+        <tr><td>Natrium (Na)</td><td>11</td><td><span class="s">11</span></td><td><span class="s">2</span></td><td><span class="s">8</span></td><td><span class="s">1</span></td></tr>
+        <tr><td>Chlor (Cl)</td><td><span class="s">17</span></td><td><span class="s">17</span></td><td><span class="s">2</span></td><td><span class="s">8</span></td><td><span class="s">7</span></td></tr>
+      </table>
+    </div>
+
+    <div class="task">
+      <div class="t"><span class="num">5</span>Warum leuchtet Feuerwerk in verschiedenen Farben? Erkläre mit dem Bohrschen Atommodell.</div>
+      <div class="s" style="font-size:10pt">Die Elektronen bekommen Energie und springen nach außen. Beim Zurückspringen geben sie Licht ab. Jedes Element hat andere Schalen-Abstände und leuchtet daher in einer anderen Farbe.</div>
+      <div class="lines"><div></div><div></div><div></div></div>
+    </div>
+    <div class="foot"><span>Physik · Atommodelle</span><span>Arbeitsblatt</span></div>
+  </div>
+
+  <div class="sheet" id="merkSheet">
+    <div class="head"><h1>Merktext: Das Bohrsche Atommodell</h1><div class="nm">Hefteintrag</div></div>
+    <div class="merk" style="margin-top:6mm">
+      <h2>1. Wer und wann?</h2>
+      <ul><li>Niels Bohr, dänischer Physiker, 1913</li></ul>
+      <h2>2. Aufbau des Atoms</h2>
+      <ul>
+        <li><b>Atomkern</b> (in der Mitte):
+          <ul><li>Protonen: positiv geladen (+)</li><li>Neutronen: nicht geladen (neutral)</li></ul></li>
+        <li><b>Atomhülle</b> (außen):
+          <ul><li>Elektronen: negativ geladen (−)</li><li>Sie bewegen sich auf bestimmten Bahnen = <b>Schalen</b>.</li></ul></li>
+        <li>Anzahl Protonen = Anzahl Elektronen = <b>Ordnungszahl</b></li>
+      </ul>
+      <h2>3. Regeln für die Schalen</h2>
+      <ul>
+        <li>1. Schale (K): höchstens <b>2</b> Elektronen</li>
+        <li>2. Schale (L): höchstens <b>8</b> Elektronen</li>
+        <li>3. Schale (M): höchstens <b>8</b> Elektronen (bis Calcium)</li>
+        <li>Die Schalen werden von innen nach außen befüllt.</li>
+      </ul>
+      <h2>4. Elektronensprung und Licht</h2>
+      <ul>
+        <li>Elektron nimmt Energie auf → springt auf eine <b>äußere</b> Schale.</li>
+        <li>Elektron springt zurück → gibt die Energie als <b>Licht</b> ab.</li>
+        <li>Großer Sprung → blaues/violettes Licht · kleiner Sprung → rotes Licht</li>
+        <li>Jedes Element leuchtet in eigenen Farben (z. B. Feuerwerk).</li>
+      </ul>
+    </div>
+    <div style="display:flex;justify-content:center;margin-top:8mm">
+      <svg id="merkAtom" viewBox="0 0 420 250" style="width:120mm;height:72mm"></svg>
+    </div>
+    <div style="text-align:center;font-size:10pt">Beispiel: Natrium (Na) – 11 Protonen, 12 Neutronen, 11 Elektronen (2 – 8 – 1)</div>
+    <div class="foot"><span>Physik · Atommodelle</span><span>Merktext</span></div>
+  </div>
+</section>
+
+<!-- ================= ÜBUNGSBLATT ================= -->
+<section class="tab" id="ueb">
+  <div class="toolbar noprint" data-for="ueb">
+    <label><input type="checkbox" class="optLines" checked> Antwortlinien</label>
+    <label><input type="checkbox" class="optSol"> Lösungen einblenden</label>
+    <label>QR-Link: <input type="text" class="optQR" value="https://haro2204.github.io/Physik-Werkstatt/bohr-atommodell.html#sim" placeholder="Link zur Simulation"></label>
+    <button class="btn printBtn">🖨️ Drucken</button>
+    <span class="printMsg"></span>
+  </div>
+  <div class="preview-hint">Vorschau in A4. Tipp: Einmal mit und einmal ohne Lösungen drucken.</div>
+
+  <div class="sheet" id="uebSheet">
+    <div class="head"><h1>Übung: Bohrsches Atommodell</h1><div class="nm">Name: ____________________ Datum: ________</div></div>
+    <div class="qrbox"><div class="qr"></div>Simulation</div>
+
+    <div class="task">
+      <div class="t"><span class="num">1</span>Zeichne die Elektronen ein und notiere die Besetzung der Schalen.</div>
+      <div class="atomgrid" id="drawGrid"></div>
+    </div>
+
+    <div class="task">
+      <div class="t"><span class="num">2</span>Richtig oder falsch? Kreuze an.</div>
+      <table class="ws rf">
+        <tr><th style="text-align:left">Aussage</th><th>R</th><th>F</th></tr>
+        <tr><td>Die Protonen und Neutronen befinden sich im Atomkern.</td><td class="c"><span class="s">✗</span></td><td class="c"></td></tr>
+        <tr><td>Auf die 1. Schale passen 8 Elektronen.</td><td class="c"></td><td class="c"><span class="s">✗</span></td></tr>
+        <tr><td>Ein Atom hat gleich viele Elektronen wie Protonen.</td><td class="c"><span class="s">✗</span></td><td class="c"></td></tr>
+        <tr><td>Elektronen sind positiv geladen.</td><td class="c"></td><td class="c"><span class="s">✗</span></td></tr>
+        <tr><td>Springt ein Elektron auf eine innere Schale zurück, wird Licht abgegeben.</td><td class="c"><span class="s">✗</span></td><td class="c"></td></tr>
+        <tr><td>Bohrs Modell zeigt genau, wie ein Atom in Wirklichkeit aussieht.</td><td class="c"></td><td class="c"><span class="s">✗</span></td></tr>
+      </table>
+    </div>
+
+    <div class="task">
+      <div class="t"><span class="num">3</span>Elektronensprünge: Die Pfeile zeigen Sprünge zwischen den Schalen.</div>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <svg id="levelSvg" viewBox="0 0 300 200" style="width:74mm;height:49mm;flex:none"></svg>
+        <div style="flex:1;font-size:10.5pt">
+          a) Wird Energie aufgenommen (A) oder als Licht abgegeben (L)? Schreibe A oder L.
+          <table class="ws" style="margin:3px 0 6px"><tr><th>①</th><th>②</th><th>③</th><th>④</th></tr>
+          <tr><td><span class="s">A</span></td><td><span class="s">L</span></td><td><span class="s">L</span></td><td><span class="s">A</span></td></tr></table>
+          b) Welcher Sprung gibt mehr Energie ab: ② oder ③? Begründe.
+          <div class="s" style="font-size:10pt">③, weil der Abstand zwischen den Schalen größer ist (blaues statt rotes Licht).</div>
+          <div class="lines"><div></div><div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="task">
+      <div class="t"><span class="num">4</span>★ Knobelaufgabe: Wer bin ich?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:10.5pt">
+        <div>a) Ich habe 2 Schalen. Auf meiner äußeren Schale sitzen 6 Elektronen.
+          <div class="s">Sauerstoff (O): 2 – 6</div><div class="lines"><div></div></div></div>
+        <div>b) Ich habe 3 Schalen und nur 1 Außenelektron.
+          <div class="s">Natrium (Na): 2 – 8 – 1</div><div class="lines"><div></div></div></div>
+        <div>c) Alle meine 3 Schalen sind voll. Ich bin ein Edelgas.
+          <div class="s">Argon (Ar): 2 – 8 – 8</div><div class="lines"><div></div></div></div>
+        <div>d) Ich habe 13 Protonen. Wie sind meine Elektronen verteilt?
+          <div class="s">Aluminium (Al): 2 – 8 – 3</div><div class="lines"><div></div></div></div>
+      </div>
+    </div>
+    <div class="foot"><span>Physik · Atommodelle</span><span>Übungsblatt</span></div>
+  </div>
+</section>
+</main>
+
+<script>
+// ---------- Daten ----------
+const EL=[null,
+ ["H","Wasserstoff",0],["He","Helium",2],["Li","Lithium",4],["Be","Beryllium",5],["B","Bor",6],
+ ["C","Kohlenstoff",6],["N","Stickstoff",7],["O","Sauerstoff",8],["F","Fluor",10],["Ne","Neon",10],
+ ["Na","Natrium",12],["Mg","Magnesium",12],["Al","Aluminium",14],["Si","Silicium",14],["P","Phosphor",16],
+ ["S","Schwefel",16],["Cl","Chlor",18],["Ar","Argon",22],["K","Kalium",20],["Ca","Calcium",20]];
+const CAP=[2,8,8,2];
+function shells(z){const r=[];let left=z;for(const c of CAP){if(left<=0)break;const k=Math.min(c,left);r.push(k);left-=k;}return r;}
+const NOTES={1:"Wasserstoff ist das einfachste Atom: 1 Proton, 1 Elektron.",2:"Edelgas: Die 1. Schale ist voll.",10:"Edelgas: Die 2. Schale ist voll.",18:"Edelgas: Die 3. Schale ist voll (8).",11:"Natrium färbt Flammen gelb (Straßenlaternen, Feuerwerk).",3:"Lithium färbt Flammen rot.",19:"Kalium beginnt mit der 4. Schale, obwohl die 3. Schale eigentlich mehr fassen könnte.",20:"Calcium: 2 – 8 – 8 – 2."};
+const NS="http://www.w3.org/2000/svg";
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+
+function hexPts(cx,cy,tot,br){const d=br*2.08,pts=[];const R=Math.ceil(Math.sqrt(tot))+2;
+  for(let q=-R;q<=R;q++)for(let r=-R;r<=R;r++){const x=d*(q+r/2),y=d*r*Math.sqrt(3)/2;pts.push([x,y,Math.hypot(x,y)+0.001*Math.atan2(y,x)]);}
+  pts.sort((a,b)=>a[2]-b[2]);return pts.slice(0,tot).map(p=>[cx+p[0],cy+p[1]]);}
+// Kern zeichnen (Wabenmuster)
+function nucleus(g,cx,cy,p,n,size,labels){
+  const tot=p+n, br=size;
+  const order=[];let pi=0,ni=0;
+  for(let i=0;i<tot;i++){ if((pi/p||0)<=(ni/n||0)&&pi<p||ni>=n){order.push("p");pi++;}else{order.push("n");ni++;} }
+  const pts=hexPts(cx,cy,tot,br);const ord=order;const spread=br*2.08;
+  pts.forEach((pt,i)=>{
+    const isP=ord[i]==="p";
+    el("circle",{cx:pt[0],cy:pt[1],r:br,fill:isP?"#d94848":"#9aa2b1",stroke:"#fff","stroke-width":br*0.18},g);
+    if(labels&&isP){const t=el("text",{x:pt[0],y:pt[1]+br*0.42,"text-anchor":"middle","font-size":br*1.2,fill:"#fff","font-weight":"700"},g);t.textContent="+";}
+  });
+  return spread*Math.sqrt(tot)+br;
+}
+
+// ---------- Tabs ----------
+function showTab(id){
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===id));
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.id===id));
+  try{history.replaceState(null,"","#"+id);}catch(e){}
+}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>showTab(b.dataset.t));
+document.querySelectorAll(".subtabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".subtabs button").forEach(x=>x.classList.toggle("on",x===b));
+  document.querySelectorAll(".sim").forEach(s=>s.classList.toggle("on",s.id==="sim-"+b.dataset.s));
+});
+
+// ---------- ① Atom-Baukasten ----------
+const bau=document.getElementById("bauSvg");
+let bauGroups=[],spinOn=true;
+function drawBau(z){
+  bau.innerHTML="";bauGroups=[];
+  const [sym,name,n]=EL[z];const sh=shells(z);
+  const radii=[70,110,148,184];
+  sh.forEach((_,i)=>el("circle",{cx:0,cy:0,r:radii[i],fill:"none",stroke:"#9fb3e6","stroke-width":2,"stroke-dasharray":"5 5"},bau));
+  sh.forEach((cnt,i)=>{
+    const t=el("text",{x:radii[i]*0.71+4,y:-radii[i]*0.71-4,"font-size":13,fill:"#6a7da8","font-weight":"600"},bau);t.textContent="KLMN"[i];
+    const g=el("g",{},bau);
+    for(let k=0;k<cnt;k++){const a=2*Math.PI*k/cnt-Math.PI/2;el("circle",{cx:radii[i]*Math.cos(a),cy:radii[i]*Math.sin(a),r:8,fill:"#2a5bd7",stroke:"#fff","stroke-width":2},g);}
+    bauGroups.push({g,speed:(0.5/(i+1))*(i%2?-1:1),ang:0});
+  });
+  const ng=el("g",{},bau);
+  nucleus(ng,0,0,z,n,z+n>20?6.5:8,true);
+  document.getElementById("elSym").textContent=sym;
+  document.getElementById("elName").textContent=name;
+  document.getElementById("elZ").textContent=z;
+  document.getElementById("iP").textContent=z;
+  document.getElementById("iN").textContent=n;
+  document.getElementById("iE").textContent=z;
+  document.getElementById("iB").textContent=sh.map((c,i)=>"KLMN"[i]+": "+c).join("  ·  ");
+  document.getElementById("iA").textContent=sh[sh.length-1];
+  const note=document.getElementById("elNote");
+  if(NOTES[z]){note.style.display="block";note.textContent=NOTES[z];}else note.style.display="none";
+}
+const rng=document.getElementById("elRange");
+rng.oninput=()=>drawBau(+rng.value);
+document.getElementById("elMinus").onclick=()=>{rng.value=Math.max(1,+rng.value-1);drawBau(+rng.value);};
+document.getElementById("elPlus").onclick=()=>{rng.value=Math.min(20,+rng.value+1);drawBau(+rng.value);};
+document.getElementById("spin").onchange=e=>spinOn=e.target.checked;
+drawBau(6);
+let lastT=performance.now();
+function loop(t){const dt=(t-lastT)/1000;lastT=t;
+  if(spinOn&&document.getElementById("sim").classList.contains("on")){bauGroups.forEach(o=>{o.ang+=o.speed*dt*60;o.g.setAttribute("transform","rotate("+o.ang+")");});}
+  hAnimate(dt);
+  requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+
+// ---------- ② Elektronensprung ----------
+const hS=document.getElementById("hSvg");
+const HR=[40,70,100,128,154,178];
+let hLevel=1,hBusy=false,hAng=0,hElec,photons=[];
+function wl(ni,nf){const R=1.0968e7;return 1e9/(R*(1/(nf*nf)-1/(ni*ni)));}
+function wlColor(w){let r=0,g=0,b=0;
+  if(w>=380&&w<440){r=-(w-440)/60;b=1;}else if(w<490){g=(w-440)/50;b=1;}else if(w<510){g=1;b=-(w-510)/20;}
+  else if(w<580){r=(w-510)/70;g=1;}else if(w<645){r=1;g=-(w-645)/65;}else if(w<=780){r=1;}
+  return "rgb("+Math.round(r*255)+","+Math.round(g*255)+","+Math.round(b*255)+")";}
+function drawH(){
+  hS.innerHTML="";
+  HR.forEach((r,i)=>{
+    const c=el("circle",{cx:0,cy:0,r:r,fill:"none",stroke:"#9fb3e6","stroke-width":i+1===hLevel?3:1.6,"stroke-dasharray":"4 5"},hS);
+    const t=el("text",{x:4,y:-r+14,"font-size":11,fill:"#6a7da8"},hS);t.textContent=i+1;
+  });
+  el("circle",{cx:0,cy:0,r:11,fill:"#d94848",stroke:"#fff","stroke-width":2},hS);
+  const t=el("text",{x:0,y:4.5,"text-anchor":"middle","font-size":13,fill:"#fff","font-weight":"700"},hS);t.textContent="+";
+  hElec=el("circle",{r:9,fill:"#2a5bd7",stroke:"#fff","stroke-width":2.5},hS);
+  placeE();
+  document.getElementById("hNow").textContent=hLevel;
+}
+function placeE(){const r=HR[hLevel-1];hElec.setAttribute("cx",r*Math.cos(hAng));hElec.setAttribute("cy",r*Math.sin(hAng));}
+function hAnimate(dt){
+  if(!hElec)return;
+  hAng+=dt*(1.6/hLevel);placeE();
+  photons=photons.filter(p=>{p.t+=dt;const d=p.dir*(p.t*220);const x=p.x+Math.cos(p.a)*d,y=p.y+Math.sin(p.a)*d;
+    p.node.setAttribute("transform","translate("+x+","+y+")");p.node.setAttribute("opacity",Math.max(0,1-p.t/1.1));
+    if(p.t>1.1){p.node.remove();return false;}return true;});
+}
+function photon(color,dir,label){
+  const r=HR[hLevel-1];const a=hAng;const g=el("g",{},hS);
+  el("path",{d:"M-14,0 q3.5,-7 7,0 t7,0 t7,0 t7,0",fill:"none",stroke:color,"stroke-width":3.5,"stroke-linecap":"round",transform:"rotate("+(a*180/Math.PI)+")"},g);
+  if(label){const t=el("text",{x:0,y:-12,"text-anchor":"middle","font-size":12,fill:"#333","font-weight":"700"},g);t.textContent=label;}
+  // dir 1: nach außen fliegen (Abgabe); dir -1: von außen hereinfliegen (Aufnahme)
+  const start=dir>0?r:r+190;
+  photons.push({node:g,x:start*Math.cos(a)*(dir>0?1:1),y:start*Math.sin(a),a:a,dir:dir,t:0});
+}
+function addLog(html){const l=document.getElementById("hLog");if(l.querySelector("i"))l.innerHTML="";l.insertAdjacentHTML("afterbegin","<div>"+html+"</div>");}
+function addLine(w){if(w<380||w>750)return;const s=document.getElementById("spec");const x=(w-380)/(750-380)*100;
+  const d=document.createElement("div");d.className="ln";d.style.left=x+"%";d.style.background=wlColor(w);d.style.boxShadow="0 0 8px "+wlColor(w);s.appendChild(d);}
+function lift(target){
+  if(hBusy||target<=hLevel)return;hBusy=true;setBtns();
+  photon("#f0b429",-1,"Energie");
+  addLog("⬆️ Energie aufgenommen: Schale "+hLevel+" → "+target);
+  setTimeout(()=>{hLevel=target;drawH();setTimeout(fall,1300);},700);
+}
+function fall(){
+  if(hLevel===1){hBusy=false;setBtns();return;}
+  const to=(hLevel>=3&&Math.random()<0.45)?2:1+Math.floor(Math.random()*(hLevel-1));
+  const w=wl(hLevel,to);let desc,col;
+  if(w<380){desc="UV-Licht (unsichtbar)";col="#a98bd6";}else if(w>750){desc="Infrarot (unsichtbar, Wärme)";col="#b06a6a";}
+  else{col=wlColor(w);desc='<span style="color:'+col+';text-shadow:0 0 1px #000">■</span> sichtbares Licht';}
+  const from=hLevel;hLevel=to;drawH();
+  photon(col,1,"Licht");
+  addLog("⬇️ Sprung "+from+" → "+to+": "+desc+" ("+Math.round(w)+" nm)");
+  addLine(w);
+  setTimeout(fall,1400);
+}
+function setBtns(){document.querySelectorAll("#liftBtns button").forEach(b=>b.disabled=hBusy||+b.dataset.n<=hLevel);}
+const lb=document.getElementById("liftBtns");
+for(let n=2;n<=6;n++){const b=document.createElement("button");b.className="btn";b.dataset.n=n;b.textContent="⚡ auf Schale "+n;b.onclick=()=>lift(n);lb.appendChild(b);}
+document.getElementById("specReset").onclick=()=>{document.getElementById("spec").innerHTML="";document.getElementById("hLog").innerHTML="<i>Noch keine Sprünge.</i>";};
+drawH();setBtns();
+
+// ---------- ③ Challenge ----------
+const cS=document.getElementById("cSvg");let cZ=6,cFill=[0,0,0,0],score=0,streak=0,lastZ=0;
+function newChal(){do{cZ=1+Math.floor(Math.random()*20);}while(cZ===lastZ);lastZ=cZ;cFill=[0,0,0,0];
+  document.getElementById("cSym").textContent=EL[cZ][0];document.getElementById("cName").textContent=EL[cZ][1];
+  document.getElementById("cE").textContent=cZ;document.getElementById("cFb").className="feedback";drawChal();}
+function drawChal(){
+  cS.innerHTML="";const radii=[70,110,148,184];
+  radii.forEach((r,i)=>{el("circle",{cx:0,cy:0,r:r,fill:"none",stroke:"#9fb3e6","stroke-width":2,"stroke-dasharray":"5 5"},cS);
+    const t=el("text",{x:r*0.71+4,y:-r*0.71-4,"font-size":13,fill:"#6a7da8","font-weight":"600"},cS);t.textContent="KLMN"[i];
+    for(let k=0;k<cFill[i];k++){const a=2*Math.PI*k/Math.max(cFill[i],1)-Math.PI/2;el("circle",{cx:r*Math.cos(a),cy:r*Math.sin(a),r:8,fill:"#2a5bd7",stroke:"#fff","stroke-width":2},cS);}});
+  nucleus(el("g",{},cS),0,0,cZ,EL[cZ][2],cZ+EL[cZ][2]>20?6.5:8,true);
+  const ctl=document.getElementById("cCtl");ctl.innerHTML="";
+  ["K (1. Schale)","L (2. Schale)","M (3. Schale)","N (4. Schale)"].forEach((lab,i)=>{
+    ctl.insertAdjacentHTML("beforeend",'<span>'+lab+'</span><span></span>');
+    const m=document.createElement("button");m.className="btn sec";m.textContent="−";m.onclick=()=>{if(cFill[i]>0){cFill[i]--;drawChal();}};
+    const cnt=document.createElement("span");cnt.className="cnt";cnt.textContent=cFill[i];
+    const p=document.createElement("button");p.className="btn sec";p.textContent="+";p.onclick=()=>{if(cFill[i]<8){cFill[i]++;drawChal();}};
+    ctl.lastElementChild.replaceWith(m);ctl.appendChild(cnt);ctl.appendChild(p);
+  });
+}
+document.getElementById("cCheck").onclick=()=>{
+  const want=shells(cZ);while(want.length<4)want.push(0);
+  const fb=document.getElementById("cFb");const tot=cFill.reduce((a,b)=>a+b,0);
+  if(want.every((v,i)=>v===cFill[i])){score++;streak++;fb.className="feedback ok";fb.textContent="✔ Richtig! "+EL[cZ][1]+": "+shells(cZ).join(" – ");setTimeout(newChal,1500);}
+  else{streak=0;fb.className="feedback no";
+    fb.textContent= tot!==cZ ? "Noch nicht: Du hast "+tot+" Elektronen verteilt, es sollten "+cZ+" sein." : "Die Anzahl stimmt, aber die Verteilung nicht. Denk an 2 – 8 – 8!";}
+  document.getElementById("cScore").textContent=score;document.getElementById("cStreak").textContent=streak;
+};
+document.getElementById("cNext").onclick=newChal;
+newChal();
+
+// ---------- Arbeitsblatt-Grafiken ----------
+function labelAtom(svgId,z,withLabels){
+  const s=document.getElementById(svgId);s.innerHTML="";
+  const sh=shells(z);const cx=150,cy=125,r1=sh.length>2?50:55,r2=sh.length>2?82:100,r3=114;
+  [r1,r2,r3].slice(0,sh.length).forEach(r=>el("circle",{cx,cy,r,fill:"none",stroke:"#333","stroke-width":1.4},s));
+  const rr=[r1,r2,r3];
+  const eLayer=el("g",{},s);
+  sh.forEach((c,i)=>{for(let k=0;k<c;k++){const a=2*Math.PI*k/c-Math.PI/2+(i===1&&c===4?Math.PI/4:0);el("circle",{cx:cx+rr[i]*Math.cos(a),cy:cy+rr[i]*Math.sin(a),r:7,fill:"#fff",stroke:"#111","stroke-width":1.6},eLayer);
+    const t=el("text",{x:cx+rr[i]*Math.cos(a),y:cy+rr[i]*Math.sin(a)+4,"text-anchor":"middle","font-size":11,"font-weight":"700"},eLayer);t.textContent="−";}});
+  // Kern: schwarz-weiß-tauglich
+  const g=el("g",{},s);const p=z,n=EL[z][2];const tot=p+n;const br=tot>12?5.5:6.5;
+  let pi=0;const order=[];for(let i=0;i<tot;i++){if(pi<p&&(i%2===0||order.filter(x=>x==="n").length>=n)){order.push("p");pi++;}else order.push("n");}
+  const pts=hexPts(cx,cy,tot,br);
+  pts.forEach((pt,i)=>{const isP=order[i]==="p";el("circle",{cx:pt[0],cy:pt[1],r:br,fill:isP?"#bbb":"#fff",stroke:"#111","stroke-width":1.2},g);
+    if(isP){const t=el("text",{x:pt[0],y:pt[1]+3.5,"text-anchor":"middle","font-size":9,"font-weight":"700"},g);t.textContent="+";}});
+  if(!withLabels)return;
+  // Beschriftungs-Pfeile
+  const nucR=Math.max(...pts.map(q=>Math.hypot(q[0]-cx,q[1]-cy)))+br;
+  const pP=pts[order.lastIndexOf("p")], pN=pts[order.lastIndexOf("n")];
+  const eAng=Math.PI/4, eC=[cx+r2*Math.cos(eAng),cy+r2*Math.sin(eAng)];
+  const kAng=2*Math.PI/3, lAng=1.3;
+  const targets=[
+    {box:[290,8],anchor:"l",to:[cx+nucR*0.8,cy-nucR*0.6],dot:true,sol:"Atomkern"},
+    {box:[290,52],anchor:"l",to:pP,dot:false,sol:"Proton (+)"},
+    {box:[290,96],anchor:"l",to:pN,dot:false,sol:"Neutron"},
+    {box:[290,170],anchor:"l",to:[eC[0]+5,eC[1]-5],dot:false,sol:"Elektron (−)"},
+    {box:[2,212],anchor:"t",to:[cx+r1*Math.cos(kAng),cy+r1*Math.sin(kAng)],dot:true,sol:"1. Schale (K)"},
+    {box:[290,212],anchor:"l",to:[cx+r2*Math.cos(lAng),cy+r2*Math.sin(lAng)],dot:true,sol:"2. Schale (L)"}
+  ];
+  const lay=el("g",{},s);
+  targets.forEach(tg=>{const [bx,by]=tg.box;const bw=125,bh=30;
+    const ax=tg.anchor==="t"?bx+bw-20:bx, ay=tg.anchor==="t"?by:by+bh/2;
+    el("line",{x1:ax,y1:ay,x2:tg.to[0],y2:tg.to[1],stroke:"#111","stroke-width":1},lay);
+    if(tg.dot)el("circle",{cx:tg.to[0],cy:tg.to[1],r:2.2,fill:"#111"},lay);
+    el("rect",{x:bx,y:by,width:bw,height:bh,rx:4,fill:"#fff",stroke:"#111","stroke-width":1.2},lay);
+    const t=el("text",{x:bx+bw/2,y:by+20,"text-anchor":"middle","font-size":14,fill:"#c4261d","font-weight":"700",class:"s"},lay);t.textContent=tg.sol;
+  });
+  // Teilchen und Elektronen über die Linien legen, damit alles sichtbar bleibt
+  s.appendChild(eLayer);s.appendChild(g);
+}
+labelAtom("abAtom",6,true);
+// Merktext-Atom (Natrium) mit Legende
+(function(){
+  labelAtom("merkAtom",11,false);
+  const s=document.getElementById("merkAtom");
+  const L=[["#bbb","+","Proton"],["#fff","","Neutron"],["#fff","−","Elektron"]];
+  L.forEach((l,i)=>{const y=60+i*40;el("circle",{cx:310,cy:y,r:8,fill:l[0],stroke:"#111","stroke-width":1.3},s);
+    if(l[1]){const t=el("text",{x:310,y:y+4,"text-anchor":"middle","font-size":11,"font-weight":"700"},s);t.textContent=l[1];}
+    const t=el("text",{x:326,y:y+5,"font-size":14},s);t.textContent=l[2];});
+})();
+
+// Übungsblatt: Zeichenfelder
+(function(){
+  const grid=document.getElementById("drawGrid");
+  [[4,"Beryllium (Be)"],[7,"Stickstoff (N)"],[12,"Magnesium (Mg)"],[18,"Argon (Ar)"]].forEach(([z,name])=>{
+    const sh=shells(z);const d=document.createElement("div");d.className="cell";
+    d.innerHTML="<b>"+name+"</b><br>"+z+" Elektronen";
+    const s=el("svg",{viewBox:"0 0 140 140",style:"width:32mm;height:32mm;display:block;margin:2px auto"});
+    [22,42,62].forEach(r=>el("circle",{cx:70,cy:70,r,fill:"none",stroke:"#666","stroke-width":1,"stroke-dasharray":"3 3"},s));
+    el("circle",{cx:70,cy:70,r:9,fill:"#ddd",stroke:"#111"},s);
+    const t=el("text",{x:70,y:74,"text-anchor":"middle","font-size":10,"font-weight":"700"},s);t.textContent=z+"+";
+    // Lösung
+    const sg=el("g",{class:"s"},s);
+    sh.forEach((c,i)=>{for(let k=0;k<c;k++){const a=2*Math.PI*k/c-Math.PI/2;el("circle",{cx:70+[22,42,62][i]*Math.cos(a),cy:70+[22,42,62][i]*Math.sin(a),r:4,fill:"#c4261d"},sg);}});
+    d.appendChild(s);
+    const sol=sh.concat(["–","–","–"]).slice(0,3);
+    d.insertAdjacentHTML("beforeend",'<div style="font-size:9.5pt">K <span class="gap" style="min-width:9mm"><span class="s">'+sol[0]+'</span></span> L <span class="gap" style="min-width:9mm"><span class="s">'+sol[1]+'</span></span> M <span class="gap" style="min-width:9mm"><span class="s">'+sol[2]+'</span></span></div>');
+    grid.appendChild(d);
+  });
+})();
+
+// Übungsblatt: Energiestufen
+(function(){
+  const s=document.getElementById("levelSvg");
+  const Y={1:185,2:105,3:62,4:35};
+  for(const n in Y){el("line",{x1:62,y1:Y[n],x2:290,y2:Y[n],stroke:"#111","stroke-width":2},s);
+    const t=el("text",{x:2,y:Y[n]+4,"font-size":12},s);t.textContent="Schale "+n;}
+  el("defs",{},s).innerHTML='<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#111"/></marker>';
+  const arr=[[1,3,"①",95],[3,2,"②",150],[4,2,"③",205],[2,4,"④",258]];
+  arr.forEach(([a,b,lab,x])=>{el("line",{x1:x,y1:Y[a],x2:x,y2:Y[b]+(b>a?0:0),stroke:"#111","stroke-width":2,"marker-end":"url(#ah)"},s);
+    const t=el("text",{x:x+6,y:(Y[a]+Y[b])/2+5,"font-size":14,"font-weight":"700"},s);t.textContent=lab;});
+})();
+
+// ---------- Optionen ----------
+document.querySelectorAll(".toolbar").forEach(tb=>{
+  const tab=document.getElementById(tb.dataset.for);
+  const sheets=tab.querySelectorAll(".sheet");
+  tb.querySelector(".optLines").onchange=e=>sheets.forEach(s=>s.classList.toggle("no-lines",!e.target.checked));
+  tb.querySelector(".optSol").onchange=e=>sheets.forEach(s=>s.classList.toggle("show-sol",e.target.checked));
+  const m=tb.querySelector(".optMerk");if(m)m.onchange=e=>document.getElementById("merkSheet").classList.toggle("skip",!e.target.checked);
+  tb.querySelector(".optQR").oninput=e=>{
+    const url=e.target.value.trim();
+    tab.querySelectorAll(".qrbox").forEach(b=>{const q=b.querySelector(".qr");q.innerHTML="";
+      if(url&&window.QRCode){try{new QRCode(q,{text:url,width:160,height:160,correctLevel:QRCode.CorrectLevel.M});b.classList.add("on");}catch(err){b.classList.remove("on");}}
+      else b.classList.remove("on");});
+    try{localStorage.setItem("bohrQR",url);}catch(err){}
+  };
+  tb.querySelector(".printBtn").onclick=()=>{
+    const msg=tb.querySelector(".printMsg");
+    try{window.print();}catch(err){}
+    msg.textContent="Falls kein Druckfenster erscheint: Seite im eigenen Browser öffnen oder die mitgeschickten PDFs drucken.";
+  };
+});
+try{const q=localStorage.getItem("bohrQR");if(q!==null)document.querySelectorAll(".optQR").forEach(i=>{i.value=q;});}catch(e){}
+document.querySelectorAll(".optQR").forEach(i=>i.dispatchEvent(new Event("input")));
+
+// Hash-Navigation
+function fromHash(){const h=(location.hash||"").slice(1);if(["plan","wissen","sim","ab","ueb"].includes(h))showTab(h);}
+fromHash();window.addEventListener("hashchange",fromHash);
+if(new URLSearchParams(location.search).get("sol")==="1")document.querySelectorAll(".sheet").forEach(s=>s.classList.add("show-sol"));
+</script>
+</body>
+</html>
