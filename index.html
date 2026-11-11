@@ -674,12 +674,16 @@ function sheetView(m,cfg){
   sheet.addEventListener('click',e=>{if(editing)return;const a=e.target.closest('[data-go]');if(a&&READY[a.dataset.go]){e.preventDefault();show(a.dataset.go)}});
   const opts=()=>{const o={};m.querySelectorAll('.rp [id^="o-"]').forEach(e=>{o[e.id.slice(2)]=e.type==='checkbox'?e.checked:e.value});return o};
   const root=()=>sheet.querySelector('.sroot');
-  function gen(s){const o=opts();
+  const fitLv=[0,0];
+  function gen(s,lv){const o=opts();o._fit=lv===undefined?fitLv[s?1:0]:lv;
     let h=(o.name||o.date)?`<div class="hdr"><span>${o.name?'Name: ____________________________':''}</span><span>${o.date?'Datum: _______________':''}</span></div>`:'';
     h+=`<h1>${esc(o.title)}</h1>`;return h+cfg.render(o,s,rng(seed))}
   function render(s){
     const o=opts();sheet.style.setProperty('--sf',FONTS[o.font]);const E=EDITS[id];
-    sheet.innerHTML=`<div class="sroot" lang="de">${E?E[s?'l':'s']:gen(s)}</div>`+(s?'<div class="solmark">Lösung</div>':'');
+    const put=lv=>{sheet.innerHTML=`<div class="sroot" lang="de">${E?E[s?'l':'s']:gen(s,lv)}</div>`+(s?'<div class="solmark">Lösung</div>':'')};
+    if(cfg.fit&&!E){sheet.style.height='auto';const over=()=>{const ts=sheet.querySelectorAll('.task'),t=ts[ts.length-1];return t&&t.offsetTop+t.offsetHeight>PH-50};
+      let lv=0;put(0);while(lv<cfg.fit&&over()){lv++;put(lv)}fitLv[s?1:0]=lv}
+    else put();
     sheet.classList.toggle('editing',editing);if(editing){enableEdit();markSel()}else{selP=null;$('#e-el').hidden=true}
     paginate();drawOverlay();updLock();
   }
@@ -2010,34 +2014,35 @@ const MESS_EXPS=[
   se:'Der Stein verdrängt so viel Wasser, wie er selbst Platz braucht. Der Unterschied der beiden Wasserstände ist das Volumen des Steins. 1 ml entspricht genau 1 cm³. Wird die Knetkugel anders geformt, bleibt ihr Volumen gleich.'}];
 
 EXPS.push(...MESS_EXPS);
-function lines(n,txt){return Array.from({length:n},(_,i)=>`<div class="ln" style="line-height:30px">${i===0&&txt?txt:''}</div>`).join('')}
+function lines(n,txt,lh){return Array.from({length:n},(_,i)=>`<div class="ln" style="line-height:${lh||30}px">${i===0&&txt?txt:''}</div>`).join('')}
 function viewExp(m,topic){
   const LIST=EXPS.filter(e=>(e.topic||'waerme')===topic);
-  sheetView(m,{id:'ex-'+topic,heading:'Versuchsprotokolle',sub:({wetter:'Wetter und Klima',kern:'Atome und Radioaktivität',gruen:'Von der Kohle zur grünen Energie',emstr:'Elektromagnetische Strahlung',ionstr:'Ionisierende Strahlung',forschung:'Forschen an der Zukunft',strom:'Elektrizität',optik:'Licht und Optik',bew:'Bewegung',magnet:'Magnetismus',akustik:'Schall',kraft:'Kräfte und Dichte',astro:'Sonne, Erde und Mond',energie:'Energie',winter:'Jahreskreis: Winter',mess:'Messen und Einheiten'}[topic]||'Wärmelehre')+' · Experimente',title:LIST[0].t,file:'Versuchsprotokoll',
+  sheetView(m,{id:'ex-'+topic,heading:'Versuchsprotokolle',sub:({wetter:'Wetter und Klima',kern:'Atome und Radioaktivität',gruen:'Von der Kohle zur grünen Energie',emstr:'Elektromagnetische Strahlung',ionstr:'Ionisierende Strahlung',forschung:'Forschen an der Zukunft',strom:'Elektrizität',optik:'Licht und Optik',bew:'Bewegung',magnet:'Magnetismus',akustik:'Schall',kraft:'Kräfte und Dichte',astro:'Sonne, Erde und Mond',energie:'Energie',winter:'Jahreskreis: Winter',mess:'Messen und Einheiten'}[topic]||'Wärmelehre')+' · Experimente',title:LIST[0].t,file:'Versuchsprotokoll',fit:5,
    panel:`<div class="g"><b>Versuch</b><label>Versuch auswählen<select id="o-exp">${LIST.map(e=>`<option value="${e.id}">${esc(e.t)}</option>`).join('')}</select></label>
      <label class="ck"><input type="checkbox" id="o-verm" checked> Vermutung aufschreiben</label>
      <label class="ck"><input type="checkbox" id="o-skizze"> Platz für eine Skizze</label>
      <label class="ck"><input type="checkbox" id="o-satz" checked> Satzanfänge als Hilfe</label>
      <div class="note">Die Lösung enthält die erwartete Beobachtung und eine Erklärung.</div></div>`,
    render(o,sol){
-    const e=LIST.find(x=>x.id===o.exp)||LIST[0];let nr=0,h='';
+    const e=LIST.find(x=>x.id===o.exp)||LIST[0];let nr=0,h='';const F=o._fit||0,LH=F>=3?26:30,RH=[48,40,34,30,27,24][F];
+    if(F>=4)h+=`<style>#sheet .sroot{font-size:${F>=5?13:14}px;line-height:1.3}#sheet .task{margin-bottom:${F>=5?8:10}px}</style>`;
     const svText=t=>`<div style="color:#c0392b;font-weight:700;line-height:30px;border-bottom:1.2px solid #555">${t}</div>`;
     h+=`<p style="margin:4px 0 0"><b>Forschungsfrage:</b> ${e.frage}</p>`;
-    if(o.verm)h+=task(++nr,'Vermutung: Was glaubst du, passiert?',lines(2));
+    if(o.verm)h+=task(++nr,'Vermutung: Was glaubst du, passiert?',lines(F>=3?1:2,'',LH));
     h+=task(++nr,'Material',`<ul style="columns:2;column-gap:30px">${e.mat.map(x=>`<li>${x}</li>`).join('')}</ul>${e.safe?`<div class="warn"><b>⚠ Sicherheit:</b> ${e.safe}</div>`:''}`);
-    h+=task(++nr,'Durchführung',`<ol>${e.steps.map(x=>`<li style="margin-bottom:4px">${x}</li>`).join('')}</ol>`);
-    if(o.skizze||e.skizze)h+=task(++nr,e.skizze?({schlange:'Skizze: Zeichne ein, wie sich die Luft bewegt.',muenzen:'Zeichne die Zerfallskurve: Wurf nach rechts, übrige Münzen nach oben.',ersterkreis:'Zeichne den Schaltplan deines Stromkreises.',lochkamera:'Zeichne den Weg des Lichts von der Kerze durch das Loch auf den Schirm.',schattentheater:'Zeichne Lampen, Figur und die Schattenbereiche.',muenzetaucht:'Zeichne den Weg des Lichts von der Münze zu deinem Auge.',regenbogen:'Male die Farben in der richtigen Reihenfolge.',murmel:'Zeichne das Weg-Zeit-Diagramm deiner Messwerte.',feilspaene:'Zeichne das Muster der Eisenfeilspäne.',kompassbau:'Zeichne deinen Kompass.',reiheparallel:'Zeichne die Schaltpläne der Reihen- und der Parallelschaltung.',schalterbau:'Zeichne den Schaltplan mit deinem Schalter.',domino:'Skizze: Zeichne deine verzweigte Aufstellung.',ei:'Zeichne das Ei in Leitungswasser, in Salzwasser und zwischen den Schichten.',knetboot:'Zeichne die Knetkugel und das Knetboot im Wasser.',linealwippe:'Zeichne deine Wippe im Gleichgewicht mit den Münzen.',dichteturm:'Male die Schichten im Glas und beschrifte sie.',mondlampe:'Zeichne die Kugel in vier Stellungen und male den hellen Teil an.'}[e.id]||'Skizze: Zeichne die Strömung mit Pfeilen ein.'):'Skizze des Versuchsaufbaus',`<div style="height:${e.skh||190}px;border:1.4px solid #000;border-radius:6px"></div>`);
+    h+=task(++nr,'Durchführung',`<ol>${e.steps.map(x=>`<li style="margin-bottom:${F>=2?1:4}px">${x}</li>`).join('')}</ol>`);
+    if(o.skizze||e.skizze)h+=task(++nr,e.skizze?({schlange:'Skizze: Zeichne ein, wie sich die Luft bewegt.',muenzen:'Zeichne die Zerfallskurve: Wurf nach rechts, übrige Münzen nach oben.',ersterkreis:'Zeichne den Schaltplan deines Stromkreises.',lochkamera:'Zeichne den Weg des Lichts von der Kerze durch das Loch auf den Schirm.',schattentheater:'Zeichne Lampen, Figur und die Schattenbereiche.',muenzetaucht:'Zeichne den Weg des Lichts von der Münze zu deinem Auge.',regenbogen:'Male die Farben in der richtigen Reihenfolge.',murmel:'Zeichne das Weg-Zeit-Diagramm deiner Messwerte.',feilspaene:'Zeichne das Muster der Eisenfeilspäne.',kompassbau:'Zeichne deinen Kompass.',reiheparallel:'Zeichne die Schaltpläne der Reihen- und der Parallelschaltung.',schalterbau:'Zeichne den Schaltplan mit deinem Schalter.',domino:'Skizze: Zeichne deine verzweigte Aufstellung.',ei:'Zeichne das Ei in Leitungswasser, in Salzwasser und zwischen den Schichten.',knetboot:'Zeichne die Knetkugel und das Knetboot im Wasser.',linealwippe:'Zeichne deine Wippe im Gleichgewicht mit den Münzen.',dichteturm:'Male die Schichten im Glas und beschrifte sie.',mondlampe:'Zeichne die Kugel in vier Stellungen und male den hellen Teil an.'}[e.id]||'Skizze: Zeichne die Strömung mit Pfeilen ein.'):'Skizze des Versuchsaufbaus',`<div style="height:${Math.min(e.skh||190,[190,140,120,100,85,70][F])}px;border:1.4px solid #000;border-radius:6px"></div>`);
     let beob='';
-    if(e.table){beob+=`<table style="margin-bottom:10px"><thead><tr>${e.table.cols.map(c=>`<th style="text-align:center">${c}</th>`).join('')}</tr></thead><tbody>${e.table.rows.map(rw=>`<tr><td><b>${rw}</b></td>${e.table.cols.slice(1).map(()=>`<td style="height:${e.graph?36:48}px"></td>`).join('')}</tr>`).join('')}</tbody></table>`}
-    if(e.graph){let g=`<svg viewBox="0 0 640 240" width="640" height="240" xmlns="http://www.w3.org/2000/svg" style="display:block;font-family:inherit">`;
+    if(e.table){beob+=`<table style="margin-bottom:10px"><thead><tr>${e.table.cols.map(c=>`<th style="text-align:center">${c}</th>`).join('')}</tr></thead><tbody>${e.table.rows.map(rw=>`<tr><td><b>${rw}</b></td>${e.table.cols.slice(1).map(()=>`<td style="height:${e.graph?Math.min(36,RH):RH}px"></td>`).join('')}</tr>`).join('')}</tbody></table>`}
+    if(e.graph){let g=`<svg viewBox="0 0 640 240" width="${F>=3?480:640}" height="${F>=3?180:240}" xmlns="http://www.w3.org/2000/svg" style="display:block;font-family:inherit">`;
       for(let i=0;i<=16;i++)g+=`<line x1="${70+i*33}" y1="20" x2="${70+i*33}" y2="200" stroke="#bbb" stroke-width=".8"/>`;
       for(let j=0;j<=9;j++)g+=`<line x1="70" y1="${20+j*20}" x2="598" y2="${20+j*20}" stroke="#bbb" stroke-width=".8"/>`;
       g+=`<path d="M70 210V12M62 20L70 8L78 20M60 200H610M598 192L612 200L598 208" stroke="#000" stroke-width="1.6" fill="none"/><text x="78" y="14" font-size="13" fill="#000">Temperatur in °C</text><text x="520" y="228" font-size="13" fill="#000">Zeit in min</text>`;
       if(sol)g+=`<path d="M70 180 L136 140 L202 140 L268 140 L334 140 L400 100 L466 60 L532 30" stroke="#c0392b" stroke-width="2.4" fill="none"/><text x="210" y="132" font-size="13" fill="#c0392b" font-weight="700">Eis schmilzt: Temperatur bleibt gleich</text>`;
       beob+=g+'</svg>'}
-    beob+=sol?svText(e.sb)+lines(1):lines(3,o.satz&&e.satz?`<i style="color:#444">${e.satz}</i>`:'');
+    beob+=sol?svText(e.sb)+(F>=2?'':lines(1)):lines(F>=2?2:3,o.satz&&e.satz?`<i style="color:#444">${e.satz}</i>`:'',LH);
     h+=task(++nr,'Beobachtung',beob);
-    h+=task(++nr,e.tm===false?'Erklärung':'Erklärung mit dem Teilchenmodell',sol?`<div style="color:#c0392b;font-weight:700">${e.se}</div>`:lines(e.el||4));
+    h+=task(++nr,e.tm===false?'Erklärung':'Erklärung mit dem Teilchenmodell',sol?`<div style="color:#c0392b;font-weight:700">${e.se}</div>`:lines(Math.min(e.el||4,F>=1?3:4,F>=4?2:9),'',LH));
     return h;}});
   // Beim Wechsel des Versuchs die Überschrift mitwechseln, solange sie nicht selbst geändert wurde
   $('#o-exp').addEventListener('input',()=>{const t=$('#o-title');if(EXPS.some(x=>x.t===t.value))t.value=LIST.find(x=>x.id===$('#o-exp').value).t});
