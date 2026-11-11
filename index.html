@@ -6379,17 +6379,22 @@ function viewABCD(m){
 }
 
 /* =================== VORLAGE PAPIERSPIRALE =================== */
+const SPIRAL_CACHE={};
 function spiralSvg(R,T,o){
-  const w=R/T,cx=R+6,cy=R+6,S=2*R+12,pts=[],end=2*Math.PI*(T-.55);
-  for(let a=0;a<=end;a+=.04){const r=R-w*a/(2*Math.PI);pts.push((cx+r*Math.cos(a)).toFixed(1)+' '+(cy+r*Math.sin(a)).toFixed(1))}
-  const dash=o.dash?' stroke-dasharray="7 5"':'',lw=Math.max(1.6,R/110).toFixed(1);
-  let g=`<svg viewBox="0 0 ${S} ${S}" width="${S}" height="${S}" xmlns="http://www.w3.org/2000/svg" style="display:block">`;
-  if(o.muster){const dot=(a,rr,s)=>g+=`<circle cx="${(cx+rr*Math.cos(a)).toFixed(1)}" cy="${(cy+rr*Math.sin(a)).toFixed(1)}" r="${s.toFixed(1)}" fill="none" stroke="#999" stroke-width="1"/>`;
-    for(let th=.35;th<end-2*Math.PI-.2;){const rr=R-w*th/(2*Math.PI)-w/2;dot(th,rr,w*.2);th+=1.4*w/rr}}
-  g+=`<path d="M${cx+R} ${cy} A${w/2} ${w/2} 0 0 0 ${cx+R-w} ${cy}" fill="none" stroke="#000" stroke-width="${lw}"${dash}/><polyline points="${pts.join(' ')}" fill="none" stroke="#000" stroke-width="${lw}"${dash}/>`;
-  if(o.schlange){const e=w*.22;g+=`<circle cx="${cx-e}" cy="${cy-e*.6}" r="${e*.42}" fill="#000"/><circle cx="${cx+e}" cy="${cy-e*.6}" r="${e*.42}" fill="#000"/><path d="M${cx} ${cy+e*1.2} l0 ${e*1.1} l-${e*.5} ${e*.6} M${cx} ${cy+e*2.3} l${e*.5} ${e*.6}" stroke="#c0392b" stroke-width="1.6" fill="none"/>`}
-  if(o.loch)g+=`<circle cx="${cx}" cy="${cy}" r="3" fill="#000"/>`;
-  g+=`<text x="${cx+R+2}" y="${cy+Math.max(16,R/9)+4}" font-size="${Math.max(16,R/9)}" text-anchor="end">✂</text></svg>`;return g}
+  const key=[R,T,!!o.muster,!!o.schlange,!!o.loch,!!o.dash].join('|');
+  if(!SPIRAL_CACHE[key]){
+    const w=R/T,S=2*R+12,cx=R+6,cy=R+6,end=2*Math.PI*(T-.55),k=3,cv=document.createElement('canvas');cv.width=cv.height=S*k;
+    const c=cv.getContext('2d');c.scale(k,k);c.fillStyle='#fff';c.fillRect(0,0,S,S);c.lineCap='round';c.lineJoin='round';
+    if(o.muster){c.strokeStyle='#999';c.lineWidth=1;for(let th=.35;th<end-2*Math.PI-.2;){const rr=R-w*th/(2*Math.PI)-w/2;c.beginPath();c.arc(cx+rr*Math.cos(th),cy+rr*Math.sin(th),w*.2,0,2*Math.PI);c.stroke();th+=1.4*w/rr}}
+    c.strokeStyle='#000';c.lineWidth=Math.max(1.6,R/110);if(o.dash)c.setLineDash([7,5]);
+    c.beginPath();c.arc(cx+R-w/2,cy,w/2,0,Math.PI,true);c.stroke();
+    c.beginPath();for(let a=0;a<=end;a+=.02){const r=R-w*a/(2*Math.PI);a?c.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a)):c.moveTo(cx+r,cy)}c.stroke();c.setLineDash([]);
+    if(o.schlange){const e=w*.22;c.fillStyle='#000';[[-1],[1]].forEach(([s])=>{c.beginPath();c.arc(cx+s*e,cy-e*.6,e*.42,0,2*Math.PI);c.fill()});
+      c.strokeStyle='#c0392b';c.lineWidth=1.6;c.beginPath();c.moveTo(cx,cy+e*1.2);c.lineTo(cx,cy+e*2.3);c.lineTo(cx-e*.5,cy+e*2.9);c.moveTo(cx,cy+e*2.3);c.lineTo(cx+e*.5,cy+e*2.9);c.stroke()}
+    if(o.loch){c.fillStyle='#000';c.beginPath();c.arc(cx,cy,3,0,2*Math.PI);c.fill()}
+    const fs=Math.max(16,R/9);c.fillStyle='#000';c.font=fs+'px Arial, sans-serif';c.textAlign='right';c.fillText('✂',cx+R+2,cy+fs+4);
+    SPIRAL_CACHE[key]=cv.toDataURL('image/png')}
+  const S=2*R+12;return `<img src="${SPIRAL_CACHE[key]}" width="${S}" height="${S}" alt="Spirale zum Ausschneiden" style="display:block;width:${S}px;height:${S}px">`}
 function viewSpirale(m){
   sheetView(m,{id:'ab-spirale',heading:'Vorlage Papierspirale',sub:'Wärmelehre · Bastelvorlage',title:'Papierspirale zum Ausschneiden',file:'Vorlage_Papierspirale',noSol:true,
    panel:`<div class="g"><b>Vorlage</b><label>Anzahl pro Seite<select id="o-anz"><option value="1">1 große Spirale</option><option value="2">2 Spiralen</option><option value="4" selected>4 Spiralen</option><option value="6">6 Spiralen</option></select></label>
