@@ -1,9 +1,7 @@
 <!doctype html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>
 <title>Physik-Werkstatt</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Nunito:wght@400;700&display=swap">
 <style>
@@ -191,9 +189,6 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 @media (max-width:980px){.view{flex-direction:column}.rp{width:auto;border-left:0;border-top:1px solid var(--line)}.simgrid{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:760px){.app{flex-direction:column}aside{width:auto;max-height:40vh;border-right:0;border-bottom:1px solid var(--line)}main{overflow:visible}.answers{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
-</head>
-<body>
-
 
 <div class="bar"><strong>Physik-Werkstatt</strong><span class="crumb" id="crumb"></span><button class="b" id="qrbtn" hidden style="margin-left:auto;white-space:nowrap">📱 QR fürs iPad</button></div>
 <div class="app">
@@ -1244,9 +1239,21 @@ const EXPS=[
  {id:'stroemung',satz:'Das warme rote Wasser …',t:'Bunte Strömung im Wasserglas',frage:'Wie bewegen sich warmes und kaltes Wasser?',
   mat:['großes durchsichtiges Glas mit Wasser (Zimmertemperatur)','Eiswürfel aus blau gefärbtem Wasser (am Vortag einfrieren)','kleines Fläschchen','warmes Wasser mit roter Lebensmittelfarbe','Zange oder Schnur'],
   steps:['Lege den blauen Eiswürfel vorsichtig in das große Glas. Beobachte zwei Minuten lang.','Fülle das Fläschchen mit warmem, rotem Wasser.','Stelle das offene Fläschchen mit der Zange vorsichtig auf den Boden des großen Glases.','Zeichne die Bewegung des blauen und des roten Wassers mit Pfeilen in die Skizze.'],
-  safe:'Kein kochendes Wasser verwenden. Vorsicht mit dem Glas.',skizze:true,
+  safe:'Kein kochendes Wasser verwenden. Vorsicht mit dem Glas.',skizze:true,skh:130,el:3,
   sb:'Das blaue Schmelzwasser sinkt nach unten. Das rote warme Wasser steigt aus dem Fläschchen nach oben.',
   se:'Kaltes Wasser ist dichter und sinkt nach unten. Warmes Wasser ist weniger dicht und steigt auf. So entsteht eine Strömung, die Wärme mitnimmt: die Wärmeströmung.'},
+ {id:'spirale',satz:'Die Papierspirale über der Kerze …',t:'Die tanzende Papierspirale',frage:'Kann warme Luft eine Papierspirale antreiben?',tm:false,
+  mat:['Papier (Kopierpapier) und Schere','Bleistift und Zirkel oder ein Teller zum Umfahren','Faden (ca. 30 cm) und Nadel','Teelicht auf einem feuerfesten Teller','Feuerzeug (nur Lehrkraft)'],
+  steps:['Zeichne einen Kreis (ca. 15 cm Durchmesser) auf das Papier und darin eine Spirale von außen bis zur Mitte. Schneide die Spirale entlang der Linie aus.','Stich mit der Nadel ein kleines Loch in die Mitte und fädle den Faden durch. Mache unten einen Knoten.','Halte die Spirale am Faden über den Tisch, ohne Kerze. Beobachte.','Die Lehrkraft zündet das Teelicht an. Halte die Spirale etwa 20 cm über die Flamme. Beobachte.'],
+  safe:'Mindestens 20 cm Abstand zur Flamme halten, das Papier darf die Flamme nie berühren! Lange Haare zusammenbinden. Ein Glas Wasser bereitstellen.',skizze:true,skh:95,el:3,
+  sb:'Ohne Kerze hängt die Spirale still. Über der Kerze beginnt sie sich zu drehen, immer schneller, je näher man (vorsichtig!) kommt.',
+  se:'Die Kerzenflamme erwärmt die Luft. Warme Luft hat eine kleinere Dichte und steigt nach oben. Die aufsteigende Luft strömt an den schrägen Flächen der Spirale vorbei und schiebt sie an. Das ist Wärmeströmung (Konvektion). Nach demselben Prinzip dreht sich die Weihnachtspyramide.'},
+ {id:'teebeutel',satz:'Der leere Teebeutel-Zylinder …',t:'Die Teebeutel-Rakete',frage:'Warum fliegt die Asche des brennenden Teebeutels nach oben?',tm:false,
+  mat:['1 Teebeutel mit Faden und Klammer (Sorte mit geknicktem Beutel, nicht der Pyramidenbeutel)','Schere','feuerfester Teller oder Backblech','Feuerzeug (nur Lehrkraft)','Glas Wasser zum Löschen'],
+  steps:['Schneide oben den Rand mit Klammer und Faden ab und leere den Tee aus.','Falte den Beutel auf und forme ihn zu einem Zylinder (einer Röhre).','Stelle den Zylinder aufrecht auf den feuerfesten Teller. Alle treten einen Schritt zurück.','Die Lehrkraft zündet den Zylinder oben am Rand an.','Beobachte genau, was passiert, kurz bevor der Beutel ganz abgebrannt ist.'],
+  safe:'Nur als Lehrerversuch oder unter direkter Aufsicht! Auf feuerfester Unterlage, nicht unter Rauchmeldern, Fenster zu (Zugluft). Nichts Brennbares in der Nähe, Wasser bereithalten.',skizze:true,skh:120,el:3,
+  sb:'Der Zylinder brennt von oben nach unten ab. Kurz vor dem Ende hebt der Rest aus Asche ab und schwebt nach oben.',
+  se:'Die Flamme erwärmt die Luft im und über dem Zylinder. Warme Luft steigt auf, von unten strömt kühlere Luft nach: Es entsteht eine Wärmeströmung nach oben. Solange der Beutel schwer ist, bleibt er stehen. Die Asche am Ende ist so leicht, dass die aufsteigende warme Luft sie mitnimmt. Nach diesem Prinzip fliegt auch ein Heißluftballon.'},
  {id:'messen',t:'Wie warm ist es hier?',frage:'Wie warm sind Luft und Wasser an verschiedenen Orten?',tm:false,
   mat:['Thermometer','Becherglas mit Leitungswasser','Becherglas mit warmem Wasser (ca. 40 °C)','Becherglas mit Wasser und Eiswürfeln','Uhr'],
   steps:['Schätze zuerst für jeden Messort die Temperatur und trage deine Vermutung ein.','Halte das Thermometer am oberen Ende. Die Kugel unten berührst du nicht, sonst misst du die Wärme deiner Hand.','Halte das Thermometer an den Messort und warte, bis sich die Flüssigkeitssäule nicht mehr bewegt.','Lies die Temperatur genau auf Augenhöhe ab und trage sie ein.','Berechne, um wie viel Grad deine Vermutung danebenlag.'],
@@ -1673,7 +1680,7 @@ const EXPS=[
   sb:'Die Glühbirne zeigt ein durchgehendes Regenbogenband. Eine Leuchtstoffröhre zeigt einzelne helle Farbstreifen. Der Bildschirm zeigt vor allem Rot, Grün und Blau.',
   se:'Die feinen Rillen der CD zerlegen das Licht in seine Farben. Jeder Stoff leuchtet mit ganz bestimmten Farbstreifen, wie ein Fingerabdruck. Astronominnen und Astronomen zerlegen so das Licht von Sternen und Galaxien und erkennen, woraus sie bestehen, obwohl sie nie dort waren. Das James-Webb-Teleskop macht das auch mit Infrarot.'}
 ];
-const EXP_ORDER=['fernbed','uvperlen','herschel','faraday','nullrate','kalium','solarzelle','windrad','standby','papierflieger','cdspek','messen','fuehlen','schuesseln','ballon','butter','stroemung','schwarzweiss','mantel','eis','tinte','dose','wolke','regenmesser','glashaus','karte','schlange','muenzen','domino','lampe','knete','nebelkammer','ersterkreis','pruefer','reiheparallel','schalterbau','zitrone','lochkamera','schattentheater','spiegelwinkel','muenzetaucht','regenbogen','farbkreisel','wieschnell','murmel','rampe','reaktion','fallschirm','magtest','feilspaene','kompassbau','durchstoffe','emagnetbau','traeger','schnurtel','stimmgabel','lineal','flaschenorgel','reis','federdehnen','schwimmtest','ei','knetboot','reibung','linealwippe','dichteturm','dichtestein','mondlampe','globus','schraeg','schattenstab','pendel','ballhuepf','kurbel','verdunstung'];
+const EXP_ORDER=['fernbed','uvperlen','herschel','faraday','nullrate','kalium','solarzelle','windrad','standby','papierflieger','cdspek','messen','fuehlen','schuesseln','ballon','butter','stroemung','spirale','teebeutel','schwarzweiss','mantel','eis','tinte','dose','wolke','regenmesser','glashaus','karte','schlange','muenzen','domino','lampe','knete','nebelkammer','ersterkreis','pruefer','reiheparallel','schalterbau','zitrone','lochkamera','schattentheater','spiegelwinkel','muenzetaucht','regenbogen','farbkreisel','wieschnell','murmel','rampe','reaktion','fallschirm','magtest','feilspaene','kompassbau','durchstoffe','emagnetbau','traeger','schnurtel','stimmgabel','lineal','flaschenorgel','reis','federdehnen','schwimmtest','ei','knetboot','reibung','linealwippe','dichteturm','dichtestein','mondlampe','globus','schraeg','schattenstab','pendel','ballhuepf','kurbel','verdunstung'];
 EXPS.sort((a,b)=>EXP_ORDER.indexOf(a.id)-EXP_ORDER.indexOf(b.id));
 /* =================== JAHRESKREIS: ADVENTKALENDER =================== */
 const ADVENT=[
@@ -2018,7 +2025,7 @@ function viewExp(m,topic){
     if(o.verm)h+=task(++nr,'Vermutung: Was glaubst du, passiert?',lines(2));
     h+=task(++nr,'Material',`<ul style="columns:2;column-gap:30px">${e.mat.map(x=>`<li>${x}</li>`).join('')}</ul>${e.safe?`<div class="warn"><b>⚠ Sicherheit:</b> ${e.safe}</div>`:''}`);
     h+=task(++nr,'Durchführung',`<ol>${e.steps.map(x=>`<li style="margin-bottom:4px">${x}</li>`).join('')}</ol>`);
-    if(o.skizze||e.skizze)h+=task(++nr,e.skizze?({schlange:'Skizze: Zeichne ein, wie sich die Luft bewegt.',muenzen:'Zeichne die Zerfallskurve: Wurf nach rechts, übrige Münzen nach oben.',ersterkreis:'Zeichne den Schaltplan deines Stromkreises.',lochkamera:'Zeichne den Weg des Lichts von der Kerze durch das Loch auf den Schirm.',schattentheater:'Zeichne Lampen, Figur und die Schattenbereiche.',muenzetaucht:'Zeichne den Weg des Lichts von der Münze zu deinem Auge.',regenbogen:'Male die Farben in der richtigen Reihenfolge.',murmel:'Zeichne das Weg-Zeit-Diagramm deiner Messwerte.',feilspaene:'Zeichne das Muster der Eisenfeilspäne.',kompassbau:'Zeichne deinen Kompass.',reiheparallel:'Zeichne die Schaltpläne der Reihen- und der Parallelschaltung.',schalterbau:'Zeichne den Schaltplan mit deinem Schalter.',domino:'Skizze: Zeichne deine verzweigte Aufstellung.',ei:'Zeichne das Ei in Leitungswasser, in Salzwasser und zwischen den Schichten.',knetboot:'Zeichne die Knetkugel und das Knetboot im Wasser.',linealwippe:'Zeichne deine Wippe im Gleichgewicht mit den Münzen.',dichteturm:'Male die Schichten im Glas und beschrifte sie.',mondlampe:'Zeichne die Kugel in vier Stellungen und male den hellen Teil an.'}[e.id]||'Skizze: Zeichne die Strömung mit Pfeilen ein.'):'Skizze des Versuchsaufbaus','<div style="height:190px;border:1.4px solid #000;border-radius:6px"></div>');
+    if(o.skizze||e.skizze)h+=task(++nr,e.skizze?({schlange:'Skizze: Zeichne ein, wie sich die Luft bewegt.',muenzen:'Zeichne die Zerfallskurve: Wurf nach rechts, übrige Münzen nach oben.',ersterkreis:'Zeichne den Schaltplan deines Stromkreises.',lochkamera:'Zeichne den Weg des Lichts von der Kerze durch das Loch auf den Schirm.',schattentheater:'Zeichne Lampen, Figur und die Schattenbereiche.',muenzetaucht:'Zeichne den Weg des Lichts von der Münze zu deinem Auge.',regenbogen:'Male die Farben in der richtigen Reihenfolge.',murmel:'Zeichne das Weg-Zeit-Diagramm deiner Messwerte.',feilspaene:'Zeichne das Muster der Eisenfeilspäne.',kompassbau:'Zeichne deinen Kompass.',reiheparallel:'Zeichne die Schaltpläne der Reihen- und der Parallelschaltung.',schalterbau:'Zeichne den Schaltplan mit deinem Schalter.',domino:'Skizze: Zeichne deine verzweigte Aufstellung.',ei:'Zeichne das Ei in Leitungswasser, in Salzwasser und zwischen den Schichten.',knetboot:'Zeichne die Knetkugel und das Knetboot im Wasser.',linealwippe:'Zeichne deine Wippe im Gleichgewicht mit den Münzen.',dichteturm:'Male die Schichten im Glas und beschrifte sie.',mondlampe:'Zeichne die Kugel in vier Stellungen und male den hellen Teil an.'}[e.id]||'Skizze: Zeichne die Strömung mit Pfeilen ein.'):'Skizze des Versuchsaufbaus',`<div style="height:${e.skh||190}px;border:1.4px solid #000;border-radius:6px"></div>`);
     let beob='';
     if(e.table){beob+=`<table style="margin-bottom:10px"><thead><tr>${e.table.cols.map(c=>`<th style="text-align:center">${c}</th>`).join('')}</tr></thead><tbody>${e.table.rows.map(rw=>`<tr><td><b>${rw}</b></td>${e.table.cols.slice(1).map(()=>`<td style="height:${e.graph?36:48}px"></td>`).join('')}</tr>`).join('')}</tbody></table>`}
     if(e.graph){let g=`<svg viewBox="0 0 640 240" width="640" height="240" xmlns="http://www.w3.org/2000/svg" style="display:block;font-family:inherit">`;
@@ -2029,7 +2036,7 @@ function viewExp(m,topic){
       beob+=g+'</svg>'}
     beob+=sol?svText(e.sb)+lines(1):lines(3,o.satz&&e.satz?`<i style="color:#444">${e.satz}</i>`:'');
     h+=task(++nr,'Beobachtung',beob);
-    h+=task(++nr,e.tm===false?'Erklärung':'Erklärung mit dem Teilchenmodell',sol?`<div style="color:#c0392b;font-weight:700">${e.se}</div>`:lines(4));
+    h+=task(++nr,e.tm===false?'Erklärung':'Erklärung mit dem Teilchenmodell',sol?`<div style="color:#c0392b;font-weight:700">${e.se}</div>`:lines(e.el||4));
     return h;}});
   // Beim Wechsel des Versuchs die Überschrift mitwechseln, solange sie nicht selbst geändert wurde
   $('#o-exp').addEventListener('input',()=>{const t=$('#o-title');if(EXPS.some(x=>x.t===t.value))t.value=LIST.find(x=>x.id===$('#o-exp').value).t});
