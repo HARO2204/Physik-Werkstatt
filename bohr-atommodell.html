@@ -73,6 +73,13 @@ table.ws.rf td{height:6.4mm;text-align:left;padding:1px 8px}
 table.ws.rf td.c{text-align:center;width:10mm}
 .atomgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .atomgrid .cell{border:1px solid #333;border-radius:6px;padding:4px;text-align:center;font-size:10pt}
+.zgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:repeat(3,76mm);gap:3mm}
+.zcell{border:1px solid #888;border-radius:6px;padding:3mm;display:flex;gap:2mm;align-items:center}
+.zinfo{font-size:10pt;line-height:1.85;flex:1;white-space:nowrap;min-width:0}
+.zinfo .gap{min-width:12mm}
+.zinfo .elname{font-weight:700;font-size:11.5pt}
+.zcell svg{width:47mm;height:47mm;flex:none}
+.version{margin-left:6px;color:#999}
 .foot{position:absolute;bottom:6mm;left:14mm;right:14mm;font-size:8pt;color:#777;display:flex;justify-content:space-between}
 .preview-hint{font-size:.85rem;color:var(--muted);text-align:center;margin:-8px 0 18px}
 /* Simulation */
@@ -104,7 +111,7 @@ table.ws.rf td.c{text-align:center;width:10mm}
   header,nav,.toolbar,.preview-hint,.noprint,.tab:not(.on){display:none!important}
   main{padding:0;max-width:none}
   .sheet{box-shadow:none;margin:0;page-break-after:always;break-after:page}
-  .sheet.skip{display:none}
+  .sheet.skip,.sheet.noprint-sheet{display:none}
   .card{border:0}
 }
 </style>
@@ -384,6 +391,7 @@ table.ws.rf td.c{text-align:center;width:10mm}
     <label><input type="checkbox" class="optLines" checked> Antwortlinien</label>
     <label><input type="checkbox" class="optSol"> Lösungen einblenden</label>
     <label><input type="checkbox" class="optMerk" checked> Merktext-Blatt mitdrucken</label>
+    <button class="btn sec diceBtn">🎲 Aufgaben würfeln</button>
     <label>QR-Link: <input type="text" class="optQR" value="https://haro2204.github.io/Physik-Werkstatt/bohr-atommodell.html#sim" placeholder="Link zur Simulation"></label>
     <button class="btn printBtn">🖨️ Drucken</button>
     <span class="printMsg" id="printMsg"></span>
@@ -428,13 +436,7 @@ table.ws.rf td.c{text-align:center;width:10mm}
 
     <div class="task">
       <div class="t"><span class="num">4</span>Vervollständige die Tabelle. Nutze das Periodensystem.</div>
-      <table class="ws">
-        <tr><th>Element</th><th>Protonen</th><th>Elektronen</th><th>1. Schale</th><th>2. Schale</th><th>3. Schale</th></tr>
-        <tr><td>Helium (He)</td><td>2</td><td><span class="s">2</span></td><td><span class="s">2</span></td><td><span class="s">–</span></td><td><span class="s">–</span></td></tr>
-        <tr><td>Sauerstoff (O)</td><td><span class="s">8</span></td><td>8</td><td><span class="s">2</span></td><td><span class="s">6</span></td><td><span class="s">–</span></td></tr>
-        <tr><td>Natrium (Na)</td><td>11</td><td><span class="s">11</span></td><td><span class="s">2</span></td><td><span class="s">8</span></td><td><span class="s">1</span></td></tr>
-        <tr><td>Chlor (Cl)</td><td><span class="s">17</span></td><td><span class="s">17</span></td><td><span class="s">2</span></td><td><span class="s">8</span></td><td><span class="s">7</span></td></tr>
-      </table>
+      <table class="ws" id="abTab"></table>
     </div>
 
     <div class="task">
@@ -442,7 +444,7 @@ table.ws.rf td.c{text-align:center;width:10mm}
       <div class="s" style="font-size:10pt">Die Elektronen bekommen Energie und springen nach außen. Beim Zurückspringen geben sie Licht ab. Jedes Element hat andere Schalen-Abstände und leuchtet daher in einer anderen Farbe.</div>
       <div class="lines"><div></div><div></div><div></div></div>
     </div>
-    <div class="foot"><span>Physik · Atommodelle</span><span>Arbeitsblatt</span></div>
+    <div class="foot"><span>Physik · Atommodelle <span class="version"></span></span><span>Arbeitsblatt</span></div>
   </div>
 
   <div class="sheet" id="merkSheet">
@@ -477,7 +479,7 @@ table.ws.rf td.c{text-align:center;width:10mm}
       <svg id="merkAtom" viewBox="0 0 420 250" style="width:120mm;height:72mm"></svg>
     </div>
     <div style="text-align:center;font-size:10pt">Beispiel: Natrium (Na) – 11 Protonen, 12 Neutronen, 11 Elektronen (2 – 8 – 1)</div>
-    <div class="foot"><span>Physik · Atommodelle</span><span>Merktext</span></div>
+    <div class="foot"><span>Physik · Atommodelle <span class="version"></span></span><span>Merktext</span></div>
   </div>
 </section>
 
@@ -486,11 +488,16 @@ table.ws.rf td.c{text-align:center;width:10mm}
   <div class="toolbar noprint" data-for="ueb">
     <label><input type="checkbox" class="optLines" checked> Antwortlinien</label>
     <label><input type="checkbox" class="optSol"> Lösungen einblenden</label>
+    <span style="color:var(--muted)">Drucken:</span>
+    <label><input type="checkbox" id="prU1" checked> Übungsblatt</label>
+    <label><input type="checkbox" id="prU2" checked> Atome zeichnen</label>
+    <label><input type="checkbox" id="optSelbst"> Atome zeichnen: Angaben selbst ergänzen</label>
+    <button class="btn sec diceBtn">🎲 Aufgaben würfeln</button>
     <label>QR-Link: <input type="text" class="optQR" value="https://haro2204.github.io/Physik-Werkstatt/bohr-atommodell.html#sim" placeholder="Link zur Simulation"></label>
     <button class="btn printBtn">🖨️ Drucken</button>
     <span class="printMsg"></span>
   </div>
-  <div class="preview-hint">Vorschau in A4. Tipp: Einmal mit und einmal ohne Lösungen drucken.</div>
+  <div class="preview-hint">Vorschau in A4. Nach dem Würfeln zuerst ohne, dann mit Lösungen drucken. Die Lösungen passen zur gewürfelten Version.</div>
 
   <div class="sheet" id="uebSheet">
     <div class="head"><h1>Übung: Bohrsches Atommodell</h1><div class="nm">Name: ____________________ Datum: ________</div></div>
@@ -542,7 +549,21 @@ table.ws.rf td.c{text-align:center;width:10mm}
           <div class="s">Aluminium (Al): 2 – 8 – 3</div><div class="lines"><div></div></div></div>
       </div>
     </div>
-    <div class="foot"><span>Physik · Atommodelle</span><span>Übungsblatt</span></div>
+    <div class="foot"><span>Physik · Atommodelle <span class="version"></span></span><span>Übungsblatt</span></div>
+  </div>
+
+  <div class="sheet" id="zeichSheet">
+    <div class="head"><h1>Atome zeichnen nach Bohr</h1><div class="nm">Name: ____________________ Datum: ________</div></div>
+    <div class="qrbox"><div class="qr"></div>Simulation</div>
+    <div style="font-size:10.5pt;margin-bottom:2mm;max-width:150mm">
+      <span id="zeichAuftrag">Zeichne mit dem Zirkel die Schalen um den Atomkern.</span>
+      Zeichne dann <b style="color:#c62828">Protonen</b> und <b style="color:#2e7d32">Neutronen</b> in den Kern und die <b style="color:#1565c0">Elektronen</b> als Punkte auf die Schalen.
+    </div>
+    <div style="font-size:9pt;color:#444;margin-bottom:3mm">
+      <span style="color:#c62828">●</span> Proton (rot) &nbsp; <span style="color:#2e7d32">●</span> Neutron (grün) &nbsp; <span style="color:#1565c0">●</span> Elektron (blau) &nbsp;·&nbsp; Schalen: innen höchstens 2, dann höchstens 8, dann höchstens 8
+    </div>
+    <div class="zgrid" id="zeichGrid"></div>
+    <div class="foot"><span>Physik · Atommodelle <span class="version"></span></span><span>Übung: Atome zeichnen</span></div>
   </div>
 </section>
 </main>
@@ -776,9 +797,10 @@ labelAtom("abAtom",6,true);
 })();
 
 // Übungsblatt: Zeichenfelder
-(function(){
-  const grid=document.getElementById("drawGrid");
-  [[4,"Beryllium (Be)"],[7,"Stickstoff (N)"],[12,"Magnesium (Mg)"],[18,"Argon (Ar)"]].forEach(([z,name])=>{
+let DRAWEL=[4,7,12,18];
+function buildDraw(){
+  const grid=document.getElementById("drawGrid");grid.innerHTML="";
+  DRAWEL.forEach(z=>{const name=EL[z][1]+" ("+EL[z][0]+")";
     const sh=shells(z);const d=document.createElement("div");d.className="cell";
     d.innerHTML="<b>"+name+"</b><br>"+z+" Elektronen";
     const s=el("svg",{viewBox:"0 0 140 140",style:"width:32mm;height:32mm;display:block;margin:2px auto"});
@@ -793,7 +815,8 @@ labelAtom("abAtom",6,true);
     d.insertAdjacentHTML("beforeend",'<div style="font-size:9.5pt">K <span class="gap" style="min-width:9mm"><span class="s">'+sol[0]+'</span></span> L <span class="gap" style="min-width:9mm"><span class="s">'+sol[1]+'</span></span> M <span class="gap" style="min-width:9mm"><span class="s">'+sol[2]+'</span></span></div>');
     grid.appendChild(d);
   });
-})();
+}
+buildDraw();
 
 // Übungsblatt: Energiestufen
 (function(){
@@ -806,6 +829,63 @@ labelAtom("abAtom",6,true);
   arr.forEach(([a,b,lab,x])=>{el("line",{x1:x,y1:Y[a],x2:x,y2:Y[b]+(b>a?0:0),stroke:"#111","stroke-width":2,"marker-end":"url(#ah)"},s);
     const t=el("text",{x:x+6,y:(Y[a]+Y[b])/2+5,"font-size":14,"font-weight":"700"},s);t.textContent=lab;});
 })();
+
+// Übung: Atome zeichnen
+let ZEL=[3,6,9,11,12,17];
+function buildZeich(selbst){
+  const grid=document.getElementById("zeichGrid");grid.innerHTML="";
+  document.getElementById("zeichAuftrag").textContent=selbst?"Ergänze zuerst die Angaben mit dem Periodensystem. Zeichne dann mit dem Zirkel die Schalen um den Atomkern.":"Zeichne mit dem Zirkel die Schalen um den Atomkern.";
+  ZEL.forEach((z,idx)=>{
+    const [sym,name,n]=EL[z];const sh=shells(z);
+    const val=v=>selbst?'<span class="gap"><span class="s">'+v+'</span></span>':'<b>'+v+'</b>';
+    const c=document.createElement("div");c.className="zcell";
+    c.innerHTML='<div class="zinfo"><div class="elname">'+(idx+1)+'. '+name+'</div>'+
+      'Symbol: '+val(sym)+'<br>Schalen: '+val(sh.length)+
+      '<br>Protonen <span style="color:#c62828">p⁺</span>: '+val(z)+
+      '<br>Neutronen <span style="color:#2e7d32">n</span>: '+val(n)+
+      '<br>Elektronen <span style="color:#1565c0">e⁻</span>: '+val(z)+'</div>';
+    const svg=el("svg",{viewBox:"0 0 58 58"});const cx=29,cy=29;
+    const tot=z+n, dr=tot>20?0.95:0.85, nr=tot>20?7.6:5.8;
+    const sol=el("g",{class:"s"},svg);const nuc=el("g",{},svg);const part=el("g",{class:"s"},svg);
+    const R=[12.5,19.5,26.5];
+    sh.forEach((cnt,i)=>{el("circle",{cx,cy,r:R[i],fill:"none",stroke:"#888","stroke-width":0.3,"stroke-dasharray":"1 0.8"},sol);
+      for(let k=0;k<cnt;k++){const a=2*Math.PI*k/cnt-Math.PI/2;el("circle",{cx:cx+R[i]*Math.cos(a),cy:cy+R[i]*Math.sin(a),r:0.9,fill:"#1565c0"},sol);}});
+    el("circle",{cx,cy,r:nr,fill:"#fff",stroke:"#111","stroke-width":0.35},nuc);
+    const pts=hexPts(cx,cy,tot,dr);
+    let pc=0,nc=0;
+    pts.forEach((pt,i)=>{const isP=pc<z&&(i%2===0||nc>=n);if(isP)pc++;else nc++;
+      el("circle",{cx:pt[0],cy:pt[1],r:dr*0.85,fill:isP?"#c62828":"#2e7d32"},part);});
+    c.appendChild(svg);grid.appendChild(c);
+  });
+}
+buildZeich(false);
+document.getElementById("optSelbst").onchange=()=>buildZeich(document.getElementById("optSelbst").checked);
+document.getElementById("prU1").onchange=e=>document.getElementById("uebSheet").classList.toggle("skip",!e.target.checked);
+document.getElementById("prU2").onchange=e=>document.getElementById("zeichSheet").classList.toggle("skip",!e.target.checked);
+
+// Arbeitsblatt Aufgabe 4: Tabelle
+let TABEL=[2,8,11,17];
+function buildTab(){
+  const t=document.getElementById("abTab");
+  let h='<tr><th>Element</th><th>Protonen</th><th>Elektronen</th><th>1. Schale</th><th>2. Schale</th><th>3. Schale</th></tr>';
+  TABEL.forEach((z,i)=>{const sh=shells(z).concat(["–","–","–"]).slice(0,3);const gp=i%2===0;
+    const S=v=>'<span class="s">'+v+'</span>';
+    h+='<tr><td>'+EL[z][1]+' ('+EL[z][0]+')</td><td>'+(gp?z:S(z))+'</td><td>'+(gp?S(z):(i===1?z:S(z)))+'</td>'+sh.map(v=>'<td>'+S(v)+'</td>').join("")+'</tr>';});
+  t.innerHTML=h;
+}
+buildTab();
+
+// 🎲 Würfeln: zufällige Elemente, gemischt aus 2- und 3-Schalen-Atomen
+function pick(pool,k){const a=pool.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a.slice(0,k).sort((x,y)=>x-y);}
+const range=(a,b)=>Array.from({length:b-a+1},(_,i)=>a+i);
+function wuerfeln(){
+  TABEL=pick(range(2,10),2).concat(pick(range(11,20),2));
+  DRAWEL=pick(range(3,10),2).concat(pick(range(11,18),2));
+  ZEL=pick(range(3,10),3).concat(pick(range(11,18),3));
+  buildTab();buildDraw();buildZeich(document.getElementById("optSelbst").checked);
+  const v=Math.random().toString(36).slice(2,6).toUpperCase();
+  document.querySelectorAll(".version").forEach(x=>x.textContent="Version "+v);
+}
 
 // ---------- Optionen ----------
 document.querySelectorAll(".toolbar").forEach(tb=>{
@@ -827,6 +907,7 @@ document.querySelectorAll(".toolbar").forEach(tb=>{
     msg.textContent="Falls kein Druckfenster erscheint: Seite im eigenen Browser öffnen oder die mitgeschickten PDFs drucken.";
   };
 });
+document.querySelectorAll(".diceBtn").forEach(b=>b.onclick=wuerfeln);
 try{const q=localStorage.getItem("bohrQR");if(q!==null)document.querySelectorAll(".optQR").forEach(i=>{i.value=q;});}catch(e){}
 document.querySelectorAll(".optQR").forEach(i=>i.dispatchEvent(new Event("input")));
 
