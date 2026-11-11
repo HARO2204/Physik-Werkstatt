@@ -6593,49 +6593,80 @@ function viewFuehrerschein(m){
 /* =================== VERTRETUNGSSTUNDE AUF KNOPFDRUCK =================== */
 function viewVertretung(m){
   const KS=Object.keys(PA).filter(k=>(WORTE[k]||[]).filter(x=>x[1]).length>=10);
+  const BOX='<span class="box" style="width:15px;height:15px"></span>';
   sheetView(m,{id:'gen-vertretung',heading:'Vertretungsstunde auf Knopfdruck',sub:'Werkzeuge · zum Weitergeben an Kolleginnen und Kollegen',title:'Vertretungsstunde Physik',file:'Vertretungsstunde',
    panel:`<div class="g"><b>Stunde</b><label>Thema<select id="o-vt">${KS.map(k=>`<option value="${k}">${esc(PA[k].t)}</option>`).join('')}</select></label>
-     <label>Stundenlänge<select id="o-vl"><option value="50">50 Minuten</option><option value="45">45 Minuten</option></select></label>
+     <label>Stundenlänge<select id="o-vl"><option value="50">50 Minuten</option><option value="45">45 Minuten</option></select></label></div>
+    <div class="g"><b>Bausteine</b>
+     <label class="ck"><input type="checkbox" id="o-ve" checked> Einstieg „Begriffe raten“ (Wiederholung)</label>
      <label class="ck"><input type="checkbox" id="o-vh" checked> Merktext ins Heft abschreiben</label>
-     <label class="ck"><input type="checkbox" id="o-vv"> Video am Beamer zeigen</label>
-     <label class="ck"><input type="checkbox" id="o-vq" checked> Quizrunde zum Schluss</label>
+     <label class="ck"><input type="checkbox" id="o-vs" checked> Simulation am Beamer</label>
+     <label class="ck"><input type="checkbox" id="o-vv"> Video am Beamer</label>
+     <label class="ck"><input type="checkbox" id="o-vq" checked> Quiz-Duell zum Schluss (zwei Teams)</label>
+     <label class="ck"><input type="checkbox" id="o-vb" checked> Rätselblatt „Buchstabensalat“ für schnelle Kinder</label>
      <label class="ck"><input type="checkbox" id="o-vr" checked> Rückmeldefeld für dich</label>
-     <label>Aufgabe 3<select id="o-vu"><option value="n">mit Richtig-oder-falsch</option><option value="k">mit Erklär-Aufgabe</option></select></label></div>
-    <div class="g"><b>Ausdruck</b><label>Seiten<select id="o-vp"><option value="alle">Infoblatt + Schülerblatt</option><option value="info">nur Infoblatt</option><option value="sb">nur Schülerblatt</option></select></label>
-     <div class="note">So gibst du die Stunde weiter: 1. PDF ohne Lösung speichern (Infoblatt + Schülerblatt). 2. „Lösung zeigen“ und noch einmal speichern: Das ist das Lösungsblatt für die Kollegin oder den Kollegen. Das Schülerblatt 1× pro Kind kopieren. „Neu würfeln“ wählt andere Begriffe.</div></div>`,
+     <label>Aufgabe 3 am Schülerblatt<select id="o-vu"><option value="n">Richtig oder falsch</option><option value="k">Erkläre in eigenen Worten</option></select></label>
+     <div class="note">Simulation und Video brauchen einen Beamer mit Internet. Der Spickzettel enthält alle Fragen mit Antworten, die Vertretung muss nichts vorbereiten.</div></div>
+    <div class="g"><b>Ausdruck</b><label>Seiten<select id="o-vp"><option value="alle">alles</option><option value="lehrer">nur Infoblatt + Spickzettel</option><option value="schueler">nur Schülerblatt + Rätselblatt</option></select></label>
+     <div class="note">So gibst du die Stunde weiter: 1. PDF ohne Lösung speichern (alle Seiten). 2. „Lösung zeigen“ und noch einmal speichern: Das sind die Lösungen zu Schülerblatt und Rätselblatt. Schüler- und Rätselblatt 1× pro Kind kopieren. „Neu würfeln“ wählt andere Begriffe.</div></div>`,
    render(o,sol,r0){const k=o.vt||KS[0],P=PA[k],r=rng(Math.floor(r0()*1e9)),pool0=WORTE[k].filter(x=>x[1]),pool=shuffle(pool0,r);let pi=0;const take=n=>{const out=[];for(let i=0;i<n;i++)out.push(pool[(pi++)%pool.length]);return out};
-    const kurz=o.vu==='k',L=+o.vl||50,vid=(P.tasks.find(t=>t.k==='vid')||{}).v;
-    // Schülerblatt
-    let nr=0,sb='';const W1=take(4),W2=take(4),W3=take(kurz?0:4),W4=take(kurz?1:0),Q=take(3);
+    const kurz=o.vu==='k',L=+o.vl||50,vid=(P.tasks.find(t=>t.k==='vid')||{}).v,simT=P.tasks.find(t=>t.k==='sim'&&READY[t.id]);
+    const useSim=o.vs&&simT,useVid=o.vv&&vid;
+    // ---------- Schülerblatt ----------
+    let nr=0,sb='';const W1=take(4),W2=take(4),W3=take(kurz?0:4),W4=take(kurz?1:0);
     sb+=`<div class="task" style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:6px"><h2 style="margin:0;font-size:24px">${esc(P.t)}</h2><span style="white-space:nowrap">Name: ______________________</span></div>`;
-    sb+=`<div class="task" style="border:2px solid #000;border-radius:10px;padding:8px 14px;line-height:1.35"><b style="font-size:15px">📒 Merktext${o.vh?' – schreibe ihn ins Heft ab':''}</b>${P.merk.map(([t,x])=>`<div style="margin-top:6px"><b>${esc(t)}</b><br>${esc(x)}</div>`).join('')}</div>`;
+    sb+=`<div class="task" style="border:2px solid #000;border-radius:10px;padding:7px 14px;line-height:1.3;font-size:14px"><b style="font-size:15px">📒 Merktext${o.vh?' – schreibe ihn ins Heft ab':''}</b>${P.merk.map(([t,x])=>`<div style="margin-top:6px"><b>${esc(t)}</b><br>${esc(x)}</div>`).join('')}</div>`;
     sb+=task(++nr,'Wie heißt der Fachbegriff? Die Wörter unten helfen dir.',`<table><colgroup><col><col style="width:200px"></colgroup><thead><tr><th>Beschreibung</th><th>Fachbegriff</th></tr></thead><tbody>${W1.map(w=>`<tr><td>${esc(w[1])}</td><td style="height:30px">${sol?`<span class="sv">${esc(w[0])}</span>`:''}</td></tr>`).join('')}</tbody></table><div class="bank"><b>Wörter:</b> ${shuffle(W1.map(w=>w[0]),r).map(esc).join(' · ')}</div>`);
     sb+=task(++nr,'Welche Erklärung gehört zu welchem Begriff? Trage den Buchstaben ein.',matchTable(W2.map(w=>[esc(w[0]),esc(w[1])]),sol,r));
-    if(W3.length){const st=W3.map(w=>{if(r()<.5)return[`<b>${esc(w[0])}</b>: ${esc(w[1])}`,true];const f=shuffle(pool0.filter(x=>x[0]!==w[0]),r)[0];return[`<b>${esc(w[0])}</b>: ${esc(f[1])}`,false]});const bx=on=>`<span class="box" style="width:17px;height:17px;line-height:15px">${sol&&on?'✗':''}</span>`;
+    if(W3.length){const st=W3.map(w=>{if(r()<.5)return[`<b>${esc(w[0])}</b>: ${esc(w[1])}`,true];const f=shuffle(pool0.filter(x=>x[0]!==w[0]),r)[0];return[`<b>${esc(w[0])}</b>: ${esc(f[1])}`,false]});
+      const bx=on=>`<span class="box" style="width:17px;height:17px;line-height:15px">${sol&&on?'✗':''}</span>`;
       sb+=task(++nr,'Passt die Erklärung zum Begriff? Kreuze an: R = richtig, F = falsch.',`<div style="border-top:1px solid #999">${st.map(([x,ok])=>`<div style="display:flex;gap:12px;align-items:center;justify-content:space-between;border-bottom:1px solid #999;padding:3px 2px"><span>${x}</span><span style="white-space:nowrap">${bx(ok)} R &nbsp; ${bx(!ok)} F</span></div>`).join('')}</div>`)}
     if(W4.length)sb+=task(++nr,`Erkläre in eigenen Worten: Was bedeutet „${esc(W4[0][0])}“?`,answer(sol,esc(W4[0][1]),2));
-    // Infoblatt
-    const st=[[5,'Ankommen','Begrüßen, Anwesenheit kontrollieren, Schülerblatt austeilen (1 pro Kind).']];
-    st.push(o.vh?[10,'Merktext','Ein Kind liest den Merktext oben am Blatt laut vor. Danach schreiben alle Überschrift und Merktext ins Heft.']:[5,'Merktext','Merktext oben am Blatt gemeinsam lesen. Ein Kind liest vor, unklare Wörter kurz besprechen.']);
-    if(o.vv&&vid)st.push([7,'Video',`Am Beamer zeigen: „${esc(vid[0])}“ (${esc(vid[1])}), <b>youtu.be/${vid[2]}</b>${vid[3]?` ab Minute ${Math.floor(vid[3]/60)}:${String(vid[3]%60).padStart(2,'0')}`:''}. Danach fragen: Was war neu für euch?`]);
-    const after=[[8,'Vergleichen','Kinder lesen ihre Antworten vor, du schaust auf dem Lösungsblatt nach. Fehler mit einer anderen Farbe ausbessern.']];
-    if(o.vq)after.push([5,'Quizrunde','Die drei Fragen unten vorlesen. Wer die Antwort weiß, zeigt auf.']);
+    // ---------- Rätselblatt (2x pro Seite) ----------
+    const cand=shuffle(pool0.filter(w=>/^[A-Za-zÄÖÜäöüß]{4,13}$/.test(w[0])),r).slice(0,6);
+    const scr=w=>{const a=w.toUpperCase().split('');let s;for(let t=0;t<20;t++){s=shuffle(a,r).join('');if(s!==w.toUpperCase())break}return s};
+    const BS=cand.map(w=>[w[0],w[1],scr(w[0])]);
+    const half=`<div style="height:492px;box-sizing:border-box;overflow:hidden"><div style="display:flex;justify-content:space-between;align-items:flex-end"><h3 style="margin:0;font-size:20px">🔤 Buchstabensalat: ${esc(P.t)}</h3><span style="font-size:13px">Name: ________________</span></div>
+      <div style="font-size:13px;margin:4px 0 6px">Die Buchstaben sind durcheinandergeraten. Die Erklärung hilft dir. Schreibe das richtige Wort auf die Linie.</div>
+      ${BS.map(([w,d,s],i)=>`<div style="display:grid;grid-template-columns:24px 1fr 230px;gap:4px 10px;align-items:end;padding:5px 0;border-bottom:1px solid #ccc"><b>${i+1}</b><div><div style="font-size:12.5px;color:#444;line-height:1.25">${esc(d)}</div><div style="font-family:monospace;font-size:19px;letter-spacing:4px;font-weight:700">${s}</div></div><div style="border-bottom:1.2px solid #000;height:26px;font-weight:700;color:#c0392b">${sol?esc(w):''}</div></div>`).join('')}</div>`;
+    const rb=BS.length>=4?`<div class="task newpg" style="margin:0">${half}<div style="border-top:1.5px dashed #888;margin:14px -20px 14px;position:relative"><span style="position:absolute;right:20px;top:-9px;background:#fff;font-size:11px;color:#888;padding:0 4px">✂</span></div>${half}</div>`:'';
+    // ---------- Ablauf ----------
+    const EZ=take(5),Q=take(8);
+    const st=[];
+    st.push([o.ve?7:4,'Ankommen'+(o.ve?' und Wiederholung':''),`Begrüßen, Anwesenheit kontrollieren.${o.ve?' Dann <b>„Begriffe raten“</b> (Spickzettel): Du liest eine Erklärung vor, die Kinder raten den Fachbegriff.':''}`]);
+    st.push(o.vh?[10,'Merktext','Schülerblatt austeilen. Ein Kind liest den Merktext laut vor. Danach schreiben alle Überschrift und Merktext ins Heft.']:[5,'Merktext','Schülerblatt austeilen. Merktext gemeinsam lesen, ein Kind liest vor.']);
+    if(useSim)st.push([8,'Simulation',`Am Beamer die Simulation <b>„${esc(READY[simT.id].t)}“</b> öffnen (Link und Auftrag am Spickzettel). Kinder sagen an, was du einstellen sollst.`]);
+    if(useVid)st.push([7,'Video',`Am Beamer das Video „${esc(vid[0])}“ zeigen (Link am Spickzettel). Danach fragen: Was war neu für euch?`]);
+    const after=[[6,'Vergleichen','Kinder lesen ihre Antworten vor, du schaust auf der Lösung nach. Fehler mit einer anderen Farbe ausbessern.']];
+    if(o.vq)after.push([7,'Quiz-Duell','Klasse in zwei Teams teilen. Du liest die Fragen vom Spickzettel vor, die Teams antworten abwechselnd. Richtige Antwort = 1 Punkt an der Tafel.']);
     after.push([2,'Abschluss','Schülerblatt ins Heft einkleben lassen. Platz aufräumen.']);
-    const used=st.concat(after).reduce((a,x)=>a+x[0],0);st.push([Math.max(10,L-used),'Aufgaben',`Aufgaben 1 bis ${nr} in Einzelarbeit (Partnerarbeit ist erlaubt). Tipp für die Kinder: Viele Antworten stehen im Merktext. Wer früher fertig ist: drei eigene Quizfragen mit Lösung zum Thema ins Heft schreiben und mit dem Nachbarkind tauschen.`]);
+    const used=st.concat(after).reduce((a,x)=>a+x[0],0),aufg=Math.max(12,L-used);
+    st.push([aufg,'Aufgaben',`Aufgaben 1 bis ${nr} in Einzelarbeit (Partnerarbeit ist erlaubt). Viele Antworten stehen im Merktext.${o.vb&&rb?' Wer fertig ist, bekommt das <b>Rätselblatt</b>.':' Wer fertig ist, schreibt drei eigene Quizfragen mit Lösung ins Heft.'}`]);
     let t=0;const rows=st.concat(after).map(([d,n,x])=>{const a=t;t+=d;return`<tr><td style="white-space:nowrap;text-align:center;padding:4px 6px">${a}–${t}′</td><td style="padding:4px 8px"><b>${n}</b></td><td style="padding:4px 8px">${x}</td></tr>`}).join('');
+    // ---------- Infoblatt ----------
     let ib=`<div class="task" style="margin-bottom:6px"><h2 style="margin:0 0 2px;font-size:24px">🤝 Vertretungsstunde Physik</h2><div style="font-size:17px"><b>Thema:</b> ${esc(P.t)}</div></div>`;
     ib+=`<div class="task" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px 18px"><span>Klasse: ____________</span><span>Datum: ____________</span><span>Stunde: ____________</span></div>`;
-    ib+=`<div class="task" style="background:#eef6ee;border:1.5px solid #2f8f46;border-radius:10px;padding:10px 14px"><b>Danke, dass du die Stunde übernimmst!</b> Du brauchst kein Physik-Vorwissen und keine Versuche. Alles steht auf diesen Blättern. Die Kinder arbeiten selbstständig mit dem Schülerblatt, du begleitest und vergleichst am Ende mit dem Lösungsblatt.</div>`;
-    ib+=`<div class="task"><b>Vorbereitung</b><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 18px;margin-top:4px"><span><span class="box" style="width:15px;height:15px"></span> Schülerblatt kopieren (1 pro Kind)</span><span><span class="box" style="width:15px;height:15px"></span> Lösungsblatt (1× für dich)</span>${o.vv&&vid?'<span><span class="box" style="width:15px;height:15px"></span> Beamer mit Internet</span>':''}<span><span class="box" style="width:15px;height:15px"></span> Die Kinder brauchen: Heft, Stift</span></div></div>`;
-    ib+=`<div class="task"><b>Ablauf (${L} Minuten)</b><table style="width:100%;margin-top:4px;font-size:14px"><colgroup><col style="width:72px"><col style="width:112px"><col></colgroup><tbody>${rows}</tbody></table></div>`;
-    if(o.vq)ib+=`<div class="task"><b>Quizrunde: Fragen zum Vorlesen</b><ol style="margin:4px 0 0;padding-left:22px">${Q.map(w=>`<li style="margin-bottom:3px">Was bedeutet „${esc(w[0])}“? <span style="color:#555">→ ${esc(w[1])}</span></li>`).join('')}</ol></div>`;
+    ib+=`<div class="task" style="background:#eef6ee;border:1.5px solid #2f8f46;border-radius:10px;padding:10px 14px"><b>Danke, dass du die Stunde übernimmst!</b> Du brauchst kein Physik-Vorwissen und keine Versuche. Alles steht auf diesen Blättern: Der Ablauf ist hier, alle Fragen mit Antworten und Ideen für übrige Zeit stehen am <b>Spickzettel</b>, die Lösungen auf dem Lösungsblatt.</div>`;
+    ib+=`<div class="task"><b>Vorbereitung</b><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 18px;margin-top:4px"><span>${BOX} Schülerblatt kopieren (1 pro Kind)</span>${o.vb&&rb?`<span>${BOX} Rätselblatt kopieren (½ Seite pro Kind)</span>`:''}<span>${BOX} Spickzettel und Lösungen für dich</span>${useSim||useVid?`<span>${BOX} Beamer mit Internet</span>`:''}${o.vq?`<span>${BOX} Tafel für die Quiz-Punkte</span>`:''}<span>${BOX} Die Kinder brauchen: Heft, Stift</span></div></div>`;
+    ib+=`<div class="task"><b>Ablauf (${L} Minuten)</b><table style="width:100%;margin-top:4px;font-size:14px"><colgroup><col style="width:72px"><col style="width:120px"><col></colgroup><tbody>${rows}</tbody></table>${t>L?`<div style="font-size:13px;margin-top:4px">Wenn die Zeit knapp wird: Das Quiz-Duell kann kürzer werden.</div>`:''}</div>`;
     if(o.vr)ib+=`<div class="task" style="border:1.4px dashed #555;border-radius:10px;padding:8px 14px"><b>Kurze Rückmeldung für mich</b> (bitte ins Fach legen)<div style="display:grid;grid-template-columns:150px 1fr;gap:2px 8px;margin-top:4px;align-items:end">${['Es fehlten:','So weit sind wir gekommen:','Besonderheiten:'].map(x=>`<span>${x}</span><div style="border-bottom:1px solid #000;height:24px"></div>`).join('')}</div></div>`;
+    // ---------- Spickzettel ----------
+    let sp=`<div class="task newpg" style="margin-bottom:6px"><h2 style="margin:0;font-size:24px">📋 Spickzettel für die Vertretung</h2><div style="color:#555">${esc(P.t)} · alle Antworten stehen dabei</div></div>`;
+    if(o.ve)sp+=`<div class="task"><b>Einstieg „Begriffe raten“</b> <span style="color:#555">(Erklärung vorlesen → Kinder raten den Begriff)</span><ol style="margin:4px 0 0;padding-left:22px">${EZ.map(w=>`<li style="margin-bottom:2px">${esc(w[1])} <b>→ ${esc(w[0])}</b></li>`).join('')}</ol></div>`;
+    if(useSim){const url=paUrl(simT),qr=paQR(url);sp+=`<div class="task" style="display:flex;gap:14px;align-items:flex-start;border:1.4px solid #2a7de1;border-radius:10px;padding:8px 12px"><div style="flex:1"><b>Simulation: „${esc(READY[simT.id].t)}“</b><div style="margin-top:3px">Link am Computer öffnen: <b style="word-break:break-all">${esc(url.replace('?ipad=1',''))}</b></div><div style="margin-top:4px"><b>Auftrag für die Klasse:</b> ${esc(simT.x.replace(/^Simulation „[^“]*“:\s*/,''))}</div><div style="margin-top:4px;font-size:13px;color:#444">Tipp: Lass Kinder ansagen, was du einstellen sollst, und frag: „Was passiert, wenn …?“</div></div>${qr?`<div style="flex:none;width:90px">${qr}</div>`:''}</div>`}
+    if(useVid){const url=paUrl({k:'vid',v:vid});sp+=`<div class="task"><b>Video:</b> „${esc(vid[0])}“ (${esc(vid[1])}) · <b>${esc(url)}</b>${vid[3]?` · ab ${Math.floor(vid[3]/60)}:${String(vid[3]%60).padStart(2,'0')}`:''}</div>`}
+    if(o.vq)sp+=`<div class="task"><b>Quiz-Duell</b> <span style="color:#555">(Team A und Team B abwechselnd · 1 Punkt pro richtiger Antwort)</span><ol style="margin:4px 0 0;padding-left:22px">${Q.map((w,i)=>`<li style="margin-bottom:3px">${i%2?`Wie heißt der Fachbegriff? ${esc(w[1])} <b>→ ${esc(w[0])}</b>`:`Was bedeutet „${esc(w[0])}“? <span style="color:#444">→ ${esc(w[1])}</span>`}</li>`).join('')}</ol>
+      <table style="width:auto;margin-top:6px;font-size:14px"><tr><td style="padding:4px 10px"><b>Team A</b></td><td style="width:220px"></td><td style="padding:4px 10px"><b>Team B</b></td><td style="width:220px"></td></tr></table></div>`;
+    sp+=`<div class="task" style="border:1.5px solid #e0a100;background:#fff8e1;border-radius:10px;padding:8px 14px"><b>Falls noch Zeit bleibt</b><ul style="margin:4px 0 0;padding-left:20px">${[o.vb&&rb?'Rätselblatt „Buchstabensalat“ für alle':'',o.vq?'weitere Runde Quiz-Duell (Fragen gehen nochmal von vorne)':'','Kinder schreiben eigene Quizfragen mit Lösung ins Heft und stellen sie der Klasse',useSim?'Simulation noch einmal: Kinder kommen nach vorne und bedienen sie selbst':'','Merktext-Detektiv: Du liest den Merktext vor und tauschst ein Wort aus. Wer merkt es?'].filter(Boolean).map(x=>`<li>${x}</li>`).join('')}</ul></div>`;
+    if(o.vb&&rb)sp+=`<div class="task"><b>Lösung Buchstabensalat:</b> ${BS.map(([w],i)=>`${i+1}. ${esc(w)}`).join(' · ')}</div>`;
     const hide='<style>#sheet .sroot>h1,#sheet .sroot>.hdr{display:none}</style>';
-    if(o.vp==='info')return hide+ib;
-    if(o.vp==='sb'||sol)return hide+sb;
-    return hide+ib+sb.replace('<div class="task"','<div class="task newpg"')}});
+    const SB=sb.replace('<div class="task"','<div class="task newpg"')+(o.vb?rb:'');
+    if(sol)return hide+sb+(o.vb?rb:'');
+    if(o.vp==='lehrer')return hide+ib+sp;
+    if(o.vp==='schueler')return hide+sb+(o.vb?rb:'');
+    return hide+ib+sp+SB}});
+  liveLoad(LIVE_QR_URL).then(()=>{const q=$('#o-vt');if(q&&current==='gen-vertretung')q.dispatchEvent(new Event('change'))}).catch(()=>{});
 }
-
 /* =================== MATERIALLISTE FÜR MEHRERE VERSUCHE =================== */
 const MAT_KAT=[['📏 Messgeräte',/thermometer|stoppuhr|\buhr\b|lineal|maßband|geodreieck|messzylinder|messbecher|waage|multimeter|spannungs|geigerzähler|kompass|kraftmesser|skala/],
  ['🔌 Elektrik und Magnete',/batterie|kabel|lämpchen|krokodil|motor|solar|magnet|draht|schalter|\bled\b|fernbedienung|eisennagel/],
