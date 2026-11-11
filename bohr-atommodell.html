@@ -914,6 +914,7 @@ document.querySelectorAll(".optQR").forEach(i=>i.dispatchEvent(new Event("input"
 // Hash-Navigation
 function fromHash(){const h=(location.hash||"").slice(1);if(["plan","wissen","sim","ab","ueb"].includes(h))showTab(h);}
 fromHash();window.addEventListener("hashchange",fromHash);
+if(new URLSearchParams(location.search).get("nur")==="sim"){showTab("sim");const st=document.createElement("style");st.textContent="header{display:none!important}main{padding-top:12px}";document.head.appendChild(st);}
 if(new URLSearchParams(location.search).get("sol")==="1")document.querySelectorAll(".sheet").forEach(s=>s.classList.add("show-sol"));
 </script>
 </body>
