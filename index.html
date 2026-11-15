@@ -475,14 +475,14 @@ function fullscreen(el){try{const r=document.fullscreenElement?document.exitFull
 /* ---------- Arbeitsblatt-Rahmen ---------- */
 let DL=null;
 // SVG-Grafiken vor der PDF-Aufnahme in Bilder umwandeln (html2canvas schneidet manche SVGs ab)
-async function rasterSvgs(root){const done=[];
-  for(const svg of [...root.querySelectorAll('svg')]){if(svg.closest('.pgb'))continue;const r=svg.getBoundingClientRect();if(r.width<4||r.height<4)continue;
+async function rasterSvgs(root){const done=[],t0=Date.now(),TO=(p,ms)=>Promise.race([p,new Promise((_,j)=>setTimeout(()=>j(new Error('timeout')),ms))]);
+  for(const svg of [...root.querySelectorAll('svg')]){if(svg.closest('.pgb'))continue;if(Date.now()-t0>6000)break;const r=svg.getBoundingClientRect();if(r.width<4||r.height<4)continue;
     try{const c=svg.cloneNode(true);c.setAttribute('width',r.width);c.setAttribute('height',r.height);c.setAttribute('xmlns','http://www.w3.org/2000/svg');c.setAttribute('xmlns:xlink','http://www.w3.org/1999/xlink');c.style.maxWidth='none';c.style.height=r.height+'px';c.style.width=r.width+'px';
       const cs=getComputedStyle(svg);if(!c.style.fontFamily||c.style.fontFamily==='inherit')c.style.fontFamily=cs.fontFamily;
-      const im=new Image();im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(c));await im.decode();
+      const im=new Image();await TO(new Promise((ok,no)=>{im.onload=ok;im.onerror=no;im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(c))}),1500);
       const cv=document.createElement('canvas'),k=2;cv.width=Math.round(r.width*k);cv.height=Math.round(r.height*k);const g=cv.getContext('2d');g.scale(k,k);g.drawImage(im,0,0,r.width,r.height);
       const out=document.createElement('img');out.src=cv.toDataURL('image/png');out.style.cssText=`display:${cs.display==='inline'?'inline-block':cs.display};width:${r.width}px;height:${r.height}px;margin:${cs.margin};vertical-align:${cs.verticalAlign}`;
-      if(!out.complete)await out.decode();svg.replaceWith(out);done.push([out,svg])}catch(e){}}
+      if(!out.complete)await TO(new Promise(ok=>{out.onload=ok;out.onerror=ok}),1500);svg.replaceWith(out);done.push([out,svg])}catch(e){}}
   return()=>done.forEach(([a,b])=>a.replaceWith(b))}
 // Außerhalb von claude.ai (zum Beispiel als Datei geöffnet): PDF direkt herunterladen
 if(!(window.claude&&window.claude.use))DL={save:async({filename,data})=>{
@@ -854,13 +854,13 @@ function sheetView(m,cfg){
       const runs=[false].concat(opts().solpdf?[true]:[]);
       for(const s of runs){render(s);await new Promise(r=>requestAnimationFrame(()=>setTimeout(r,60)));
         selImg=-1;sheet.querySelectorAll('.pimg.sel').forEach(x=>x.classList.remove('sel'));sheet.classList.add('capturing');const old=sheet.style.transform;sheet.style.transform='none';
-        const unr=await rasterSvgs(sheet);const c=await html2canvas(sheet,{scale:2,backgroundColor:'#ffffff'});unr();sheet.style.transform=old;sheet.classList.remove('capturing');
+        let unr=()=>{};try{unr=await rasterSvgs(sheet)}catch(e){}const c=await html2canvas(sheet,{scale:2,backgroundColor:'#ffffff'});unr();sheet.style.transform=old;sheet.classList.remove('capturing');
         const pages=Math.round(sheet.offsetHeight/PH);
         for(let p=0;p<pages;p++){const pc=document.createElement('canvas');pc.width=c.width;pc.height=Math.round(c.height/pages);
           pc.getContext('2d').drawImage(c,0,-p*pc.height);if(!first)pdf.addPage();first=false;pdf.addImage(pc.toDataURL('image/jpeg',.92),'JPEG',0,0,210,297)}}
       render(sol);
       await DL.save({filename:ttl.trim().replace(/[\\/:*?"<>|]/g,'').slice(0,80)+'.pdf',data:pdf.output('blob')});toast('PDF gespeichert.');
-    }catch(err){render(sol);if(err&&err.code==='declined')toast('Speichern abgebrochen.');else toast('Das PDF konnte nicht gespeichert werden.')}
+    }catch(err){render(sol);if(err&&err.code==='declined')toast('Speichern abgebrochen.');else{console.error(err);toast('Das PDF konnte nicht gespeichert werden. ('+String(err&&err.message||err).slice(0,80)+')')}}
     btn.disabled=false;btn.textContent='PDF speichern';
   };
   $('#o-docx').onclick=async e=>{
