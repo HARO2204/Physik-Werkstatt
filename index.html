@@ -485,17 +485,23 @@ async function rasterSvgs(root){const done=[],t0=Date.now(),TO=(p,ms)=>Promise.r
       if(!out.complete)await TO(new Promise(ok=>{out.onload=ok;out.onerror=ok}),1500);svg.replaceWith(out);done.push([out,svg])}catch(e){}}
   return()=>done.forEach(([a,b])=>a.replaceWith(b))}
 // Außerhalb von claude.ai (zum Beispiel als Datei geöffnet): PDF direkt herunterladen
+const PW_STAND='15.11.2026, 21:00';
 if(!(window.claude&&window.claude.use))DL={save:async({filename,data})=>{
-  const file=new File([data],filename,{type:data.type||'application/octet-stream'}),u=URL.createObjectURL(file);
+  const type=data.type||(/\.pdf$/i.test(filename)?'application/pdf':'application/octet-stream'),file=new File([data],filename,{type});
   const safari=/^((?!chrome|chromium|crios|fxios|android|edg).)*safari/i.test(navigator.userAgent)||/iP(ad|hone|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-  if(!safari){const a=document.createElement('a');a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),120000);return}
-  // Safari: Download braucht einen eigenen Klick, sonst meldet Safari „Seite kann nicht geöffnet werden“
+  if(!safari){const u=URL.createObjectURL(file),a=document.createElement('a');a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),120000);return}
+  // Safari: Datei als data-URL (kein blob-Link, den Safari als Seite öffnen will) und eigener Klick
+  const durl=await new Promise((ok,no)=>{const fr=new FileReader();fr.onload=()=>ok(String(fr.result).replace(/^data:[^;,]*/,'data:application/octet-stream'));fr.onerror=no;fr.readAsDataURL(file)});
+  const canShare=!!(navigator.canShare&&navigator.canShare({files:[file]}));
   const ov=document.createElement('div');ov.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(20,30,50,.45);display:flex;align-items:center;justify-content:center;padding:16px';
-  const isPdf=/\.pdf$/i.test(filename);
-  ov.innerHTML=`<div style="background:#fff;color:#1d2433;border-radius:16px;padding:22px 24px;max-width:420px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.25);font:16px/1.4 system-ui,-apple-system,sans-serif;text-align:center"><div style="font-size:34px">${isPdf?'📄':'📝'}</div><b style="font-size:18px">Deine Datei ist fertig</b><div style="margin:6px 0 16px;color:#555;word-break:break-word">${filename.replace(/[<>&]/g,'')}</div><a id="dl-go" href="${u}" download="${filename.replace(/"/g,'')}" style="display:block;background:#3b6fe0;color:#fff;text-decoration:none;border-radius:10px;padding:12px;font-weight:700">⬇︎ Herunterladen</a><button id="dl-x" type="button" style="margin-top:10px;background:none;border:0;color:#3b6fe0;font:inherit;cursor:pointer;padding:6px">Schließen</button></div>`;
-  document.body.appendChild(ov);
-  const close=()=>{ov.remove();setTimeout(()=>URL.revokeObjectURL(u),120000)};
-  ov.querySelector('#dl-go').addEventListener('click',()=>setTimeout(close,400));ov.querySelector('#dl-x').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close()});
+  const isPdf=/\.pdf$/i.test(filename),safe=filename.replace(/[<>&"]/g,'');
+  ov.innerHTML=`<div style="background:#fff;color:#1d2433;border-radius:16px;padding:22px 24px;max-width:420px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.25);font:16px/1.4 system-ui,-apple-system,sans-serif;text-align:center"><div style="font-size:34px">${isPdf?'📄':'📝'}</div><b style="font-size:18px">Deine Datei ist fertig</b><div style="margin:6px 0 16px;color:#555;word-break:break-word">${safe}</div>
+    <a id="dl-go" href="${durl}" download="${safe}" style="display:block;background:#3b6fe0;color:#fff;text-decoration:none;border-radius:10px;padding:12px;font-weight:700">⬇︎ Herunterladen</a>
+    ${canShare?`<button id="dl-sh" type="button" style="display:block;width:100%;margin-top:8px;background:#eef2fb;color:#1d3f99;border:0;border-radius:10px;padding:11px;font:inherit;font-weight:700;cursor:pointer">📤 Teilen oder in „Dateien“ sichern</button>`:''}
+    <button id="dl-x" type="button" style="margin-top:10px;background:none;border:0;color:#3b6fe0;font:inherit;cursor:pointer;padding:6px">Schließen</button><div style="font-size:11px;color:#999;margin-top:4px">Stand der Werkstatt: ${PW_STAND}</div></div>`;
+  document.body.appendChild(ov);const close=()=>ov.remove();
+  ov.querySelector('#dl-go').addEventListener('click',()=>setTimeout(close,800));ov.querySelector('#dl-x').onclick=close;ov.addEventListener('click',e=>{if(e.target===ov)close()});
+  const sh=ov.querySelector('#dl-sh');if(sh)sh.onclick=async()=>{try{await navigator.share({files:[file],title:filename});close()}catch(e){}};
 }};
 (async()=>{try{if(window.claude&&window.claude.use)DL=await window.claude.use('downloads')}catch(e){}document.querySelectorAll('.pdfbtn').forEach(b=>b.hidden=!DL);document.querySelectorAll('.pdfnote').forEach(b=>b.hidden=!!DL)})();
 const FONTS={arial:'Arial,Helvetica,sans-serif',andika:"Andika,'Comic Sans MS',sans-serif",nunito:'Nunito,Arial,sans-serif'};
