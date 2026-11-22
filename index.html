@@ -485,7 +485,7 @@ async function rasterSvgs(root){const done=[],t0=Date.now(),TO=(p,ms)=>Promise.r
       if(!out.complete)await TO(new Promise(ok=>{out.onload=ok;out.onerror=ok}),1500);svg.replaceWith(out);done.push([out,svg])}catch(e){}}
   return()=>done.forEach(([a,b])=>a.replaceWith(b))}
 // Außerhalb von claude.ai (zum Beispiel als Datei geöffnet): PDF direkt herunterladen
-const PW_STAND='15.11.2026, 21:00';
+const PW_STAND='22.11.2026, 18:10';
 if(!(window.claude&&window.claude.use))DL={save:async({filename,data})=>{
   const type=data.type||(/\.pdf$/i.test(filename)?'application/pdf':'application/octet-stream'),file=new File([data],filename,{type});
   const safari=/^((?!chrome|chromium|crios|fxios|android|edg).)*safari/i.test(navigator.userAgent)||/iP(ad|hone|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
@@ -1110,9 +1110,9 @@ const TIERPH=[['Fell und Federn','Sie halten Luft fest. Luft leitet Wärme sehr 
 const TIERTF=[['Ein dickes Fell erzeugt selbst Wärme.',0],['Ein Fell hält warm, weil es viel Luft einschließt.',1],['Tiere in kalten Gebieten haben oft kleine Ohren.',1],['Der Wüstenfuchs hat große Ohren, damit er sich besser vor der Sonne schützen kann.',0],['Hecheln kühlt, weil Wasser auf der Zunge verdunstet.',1],['Eine Fettschicht schützt vor Kälte, weil Fett Wärme gut leitet.',0]];
 function viewMerkTiere(m,key='tiere',mid='merk-tiere',ttl='So schützen sich Tiere vor Kälte und Hitze'){const P=PLANS[key];
   sheetView(m,{id:mid,heading:'Merktext '+P.name,sub:'Wärmelehre · Merkblatt',title:ttl,file:'Merktext_'+P.name.replace(/\s+/g,'_'),noSol:true,
-   panel:`<div class="g"><b>Form</b>${P.heft.map((b,i)=>`<label class="ck"><input type="checkbox" id="o-teil${i+1}" checked> ${i+1}. ${esc(b[0])}</label>`).join('')}<label class="ck"><input type="checkbox" id="o-mk" checked> Merke-Kasten</label><div class="note">Genau so gegliedert, wie die Kinder ihn ins Heft schreiben.</div></div>`,
-   render(o){const B=[o.teil1,o.teil2];let h=`<div class="task" style="border:2.5px solid #000;border-radius:14px;padding:16px 24px"><div style="font-size:13px;color:#555">📓 Merktext: genau so ins Heft schreiben</div>`;
-    P.heft.forEach((b,i)=>{if(!B[i])return;h+=`<div style="font-size:20px;font-weight:700;margin:14px 0 6px">${i+1}. ${esc(b[0])}</div><ul style="margin:0;padding-left:26px;font-size:17.5px;line-height:1.65">${b[1].map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`});
+   panel:`<div class="g"><b>Form</b>${P.heft.map((b,i)=>`<label class="ck"><input type="checkbox" id="o-teil${i+1}" checked> ${i+1}. ${esc(b[0])}</label>`).join('')}<label class="ck"><input type="checkbox" id="o-mk" checked> Merke-Kasten</label><label class="ck"><input type="checkbox" id="o-nr" checked> Überschriften nummerieren (1., 2.)</label><div class="note">Genau so gegliedert, wie die Kinder ihn ins Heft schreiben. Wählst du nur einen Teil, steht keine Nummer davor.</div></div>`,
+   render(o){const B=[o.teil1,o.teil2],cnt=P.heft.filter((b,i)=>B[i]).length;let k=0;let h=`<div class="task" style="border:2.5px solid #000;border-radius:14px;padding:16px 24px"><div style="font-size:13px;color:#555">📓 Merktext: genau so ins Heft schreiben</div>`;
+    P.heft.forEach((b,i)=>{if(!B[i])return;k++;h+=`<div style="font-size:20px;font-weight:700;margin:14px 0 6px">${o.nr&&cnt>1?k+'. ':''}${esc(b[0])}</div><ul style="margin:0;padding-left:26px;font-size:17.5px;line-height:1.65">${b[1].map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`});
     if(o.mk)h+=`<div style="margin-top:16px;border:2px solid #000;border-radius:8px;padding:8px 12px;font-size:17.5px;line-height:1.5"><b>Merke:</b> ${esc(P.merke)}</div>`;
     return h+'</div>'}});
 }
