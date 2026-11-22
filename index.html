@@ -2203,12 +2203,16 @@ function viewIso(m){
     <label class="ck"><input type="checkbox" id="o-t2" checked> Wärme drinnen oder draußen halten?</label>
     <label class="ck"><input type="checkbox" id="o-t3" checked> Thermoskanne beschriften</label>
     <label class="ck"><input type="checkbox" id="o-t4" checked> Lückentext Thermoskanne</label>
+    <label class="ck" style="margin-left:22px"><input type="checkbox" id="o-t34" checked> neben die Thermoskanne setzen (spart Platz)</label>
     <label class="ck"><input type="checkbox" id="o-t5" checked> Denkfrage: aufgeplusterte Vögel</label></div>`,
    render(o,sol,r){let nr=0,h='';
     if(o.t1)h+=task(++nr,'Ergänze den Lückentext.',gapText('Stoffe, die Wärme schlecht leiten, nennt man [[Isolatoren]]. Viele gute Isolatoren schließen eine Menge [[Luft]] ein, zum Beispiel Wolle, Daunen oder [[Styropor]]. Isolatoren verhindern die Wärmeübertragung nicht ganz, sie [[verlangsamen]] sie.',sol,r));
     if(o.t2)h+=task(++nr,'Soll die Isolierung die Wärme drinnen halten oder draußen halten? Kreuze an.',xTable(shuffle(ISOX,r).slice(0,6),['drinnen','draußen'],sol,'Gegenstand').replace(/>drinnen</,'>Wärme drinnen halten<').replace(/>draußen</,'>Wärme draußen halten<'));
+    const TTX='Im luftleeren Zwischenraum gibt es keine Teilchen. Deshalb gibt es dort keine [[Wärmeleitung]] und keine [[Wärmeströmung]]. Die verspiegelte Wand wirft die [[Wärmestrahlung]] zurück in die Kanne. Der Verschluss verhindert, dass warme Luft [[entweicht]].',WB=()=>shuffle(['Verschluss','verspiegelte Wand','luftleerer Zwischenraum','Außenhülle'],r).join(' · ');
+    if(o.t3&&o.t4&&o.t34){h+=task(++nr,'Beschrifte die Thermoskanne und ergänze den Text.',`<div style="display:flex;gap:16px;align-items:flex-start"><div style="flex:none;width:320px">${thermos(sol).replace('width="400" height="400"','width="320" height="320"')}<div class="bank" style="margin-top:4px"><b>Wortliste:</b> ${WB()}</div></div><div style="flex:1;min-width:0">${`<div style="font-weight:700;margin-bottom:2px">Wie hält die Thermoskanne den Tee warm?</div>`+gapText(TTX,sol,r)}</div></div>`)}
+    else{
     if(o.t3)h+=task(++nr,'Beschrifte die Thermoskanne.',`<div style="display:flex;gap:16px;align-items:center">${thermos(sol)}<div class="bank" style="flex:1">Wortliste: ${shuffle(['Verschluss','verspiegelte Wand','luftleerer Zwischenraum','Außenhülle'],r).join(' · ')}</div></div>`);
-    if(o.t4)h+=task(++nr,'Wie hält die Thermoskanne den Tee warm? Ergänze.',gapText('Im luftleeren Zwischenraum gibt es keine Teilchen. Deshalb gibt es dort keine [[Wärmeleitung]] und keine [[Wärmeströmung]]. Die verspiegelte Wand wirft die [[Wärmestrahlung]] zurück in die Kanne. Der Verschluss verhindert, dass warme Luft [[entweicht]].',sol,r));
+    if(o.t4)h+=task(++nr,'Wie hält die Thermoskanne den Tee warm? Ergänze.',gapText(TTX,sol,r));}
     if(o.t5)h+=task(++nr,'Vögel plustern im Winter ihr Gefieder auf. Warum frieren sie dann weniger?',answer(sol,'Zwischen den Federn wird mehr Luft eingeschlossen. Luft ist ein schlechter Wärmeleiter, deshalb verliert der Vogel weniger Körperwärme.',4));
     return h||'<p style="color:#666">Wähle rechts mindestens eine Aufgabe aus.</p>';}});
 }
