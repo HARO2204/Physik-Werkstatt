@@ -2560,12 +2560,14 @@ function viewKlimaDia(m){
 function viewTagebuch(m){
   sheetView(m,{id:'ab-tagebuch',heading:'Wettertagebuch',sub:'Wetter und Klima · Arbeitsblatt',title:'Mein Wettertagebuch',file:'Wettertagebuch',
    panel:`<div class="g"><b>Spalten</b><label class="ck"><input type="checkbox" id="o-c1" checked> Temperatur</label><label class="ck"><input type="checkbox" id="o-c2" checked> Bewölkung</label><label class="ck"><input type="checkbox" id="o-c3" checked> Niederschlag</label><label class="ck"><input type="checkbox" id="o-c4" checked> Wind</label><label class="ck"><input type="checkbox" id="o-c5"> Luftdruck</label><label class="ck"><input type="checkbox" id="o-sym" checked> Symbol zeichnen</label>
-    <label>Tage<select id="o-d"><option value="5" selected>5 (Schulwoche)</option><option value="7">7</option><option value="10">10</option></select></label><label class="ck"><input type="checkbox" id="o-leg" checked> Symbol-Legende abdrucken</label></div>`,
-   render(o){const cols=['Datum','Uhrzeit'].concat(o.c1?['Temperatur in °C']:[],o.c2?['Bewölkung']:[],o.c3?['Niederschlag']:[],o.c4?['Wind']:[],o.c5?['Luftdruck in hPa']:[],o.sym?['Symbol']:[]);
+    <label>Tage<select id="o-d"><option value="5" selected>5 (Schulwoche)</option><option value="7">7 (eine Woche)</option><option value="10">10 (zwei Schulwochen)</option><option value="14">14 (zwei Wochen)</option></select></label>
+    <label>Erste Spalte<select id="o-tag"><option value="nr" selected>Tag 1, Tag 2, Tag 3 …</option><option value="wt">Wochentage (Mo, Di, Mi …)</option><option value="">keine</option></select></label><label class="ck"><input type="checkbox" id="o-leg" checked> Symbol-Legende abdrucken</label></div>`,
+   render(o){const D=+o.d,WT=D===5||D===10?['Mo','Di','Mi','Do','Fr']:['Mo','Di','Mi','Do','Fr','Sa','So'],first=i=>o.tag==='nr'?`<b>Tag ${i+1}</b>`:o.tag==='wt'?`<b>${WT[i%WT.length]}</b>`:'';
+    const cols=(o.tag?['Tag']:[]).concat(['Datum','Uhrzeit']).concat(o.c1?['Temperatur in °C']:[],o.c2?['Bewölkung']:[],o.c3?['Niederschlag']:[],o.c4?['Wind']:[],o.c5?['Luftdruck in hPa']:[],o.sym?['Symbol']:[]);
     let h=`<p style="margin:4px 0 0">Beobachte das Wetter jeden Tag zur gleichen Uhrzeit und trage deine Beobachtungen ein.</p>`;
-    h+=`<div class="task"><table><thead><tr>${cols.map(c=>`<th style="font-size:13px;text-align:center">${c}</th>`).join('')}</tr></thead><tbody>${Array.from({length:+o.d},()=>`<tr>${cols.map(()=>`<td style="height:${o.sym?62:44}px"></td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    h+=`<div class="task"><table>${o.tag?`<colgroup><col style="width:${o.tag==='nr'?62:44}px">${cols.slice(1).map(()=>'<col>').join('')}</colgroup>`:''}<thead><tr>${cols.map(c=>`<th style="font-size:13px;text-align:center;padding-left:3px;padding-right:3px">${c}</th>`).join('')}</tr></thead><tbody>${Array.from({length:D},(_,i)=>`<tr>${cols.map((c,j)=>`<td style="height:${D>7?(o.sym?44:34):(o.sym?62:44)}px${o.tag&&!j?';text-align:center;white-space:nowrap;width:62px':''}">${o.tag&&!j?first(i):''}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
     if(o.leg)h+=`<div class="task"><b>Legende</b><div style="display:grid;grid-template-columns:repeat(8,1fr);gap:4px;text-align:center;font-size:12px;margin-top:6px">${WSYMS.map(k=>`<div>${wsym(k,52)}<div>${k}</div></div>`).join('')}</div></div>`;
-    h+=task(1,'Was ist dir in dieser Woche aufgefallen?',lines(3));
+    h+=task(1,D>7?'Was ist dir in diesen zwei Wochen aufgefallen?':'Was ist dir in dieser Woche aufgefallen?',lines(3));
     return h;}});
 }
 
