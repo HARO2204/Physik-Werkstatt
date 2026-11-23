@@ -7006,11 +7006,11 @@ const CU=[
      {t:'open',q:'Nenne zu jeder Größe ein passendes Messgerät: Länge, Masse, Zeit, Temperatur.',a:'Maßband oder Lineal, Waage, Stoppuhr, Thermometer.',n:2}],
   v:[{t:'open',q:'Lisa misst die Länge ihres Tisches dreimal: 1,21 m, 1,19 m und 1,20 m. Warum sind die Werte verschieden, und welchen Wert sollte sie angeben?',a:'Beim Messen entstehen immer kleine Messfehler. Sie gibt den Mittelwert an: 1,20 m.',n:4}]}
 ];
-function cuItem(it,sol,r,L){
+function cuItem(it,sol,r,L,WL=true){
   const sv=t=>sol?`<span class="sv">${t}</span>`:'',O=on=>`<span style="display:inline-block;width:15px;height:15px;border:1.4px solid #000;border-radius:50%;vertical-align:-2px;text-align:center;line-height:13px;font-size:12px;color:#c0392b;font-weight:700">${sol&&on?'✗':''}</span>`;
   const take=(a,k)=>k&&k<a.length?shuffle(a.map((x,i)=>[x,i]),r).slice(0,k).sort((p,q)=>p[1]-q[1]).map(x=>x[0]):a;
   switch(it.t){
-   case 'gap':{const g=gapper({gap:true},sol);const t=g(it.x);return`<p style="line-height:2.1;margin:2px 0 0">${t}</p>`+(it.bank?`<div class="bank" style="margin-top:4px"><b>Wortliste:</b> ${shuffle([...new Set(g.words)],r).join(' · ')}</div>`:'')}
+   case 'gap':{const g=gapper({gap:true},sol);const t=g(it.x);return`<p style="line-height:2.1;margin:2px 0 0">${t}</p>`+(it.bank&&WL?`<div class="bank" style="margin-top:4px"><b>Wortliste:</b> ${shuffle([...new Set(g.words)],r).join(' · ')}</div>`:'')}
    case 'pick':return take(it.rows,it.k).map(([s,o])=>{const S=shuffle(o.map((x,i)=>[x,i===0]),r);return`<div style="margin-top:6px">${s}</div><div style="display:flex;gap:26px;flex-wrap:wrap;margin-top:2px">${S.map(([x,c])=>`<span>${O(c)} ${x}</span>`).join('')}</div>`}).join('');
    case 'name':return take(it.rows,it.k||2).map(([s,a])=>`<div style="margin-top:8px">${s}</div><div style="display:flex;gap:8px;align-items:flex-end;margin-top:2px"><span>${it.lab}</span><span style="flex:0 0 240px;border-bottom:1.2px solid #000;height:22px">${sv(a)}</span></div>`).join('');
    case 'xt':{const R=take(it.rows,it.k);return`<table style="margin-top:6px;font-size:14px"><colgroup><col>${it.cols.map(()=>`<col style="width:${it.cols.length>2?78:96}px">`).join('')}</colgroup><thead><tr><th>${it.head}</th>${it.cols.map(c=>`<th style="text-align:center;font-size:12.5px">${c}</th>`).join('')}</tr></thead><tbody>${R.map(([s,c])=>`<tr><td style="padding:3px 6px">${s}</td>${it.cols.map((_,j)=>`<td style="text-align:center;padding:3px">${sol&&c.includes(j)?'<b style="color:#c0392b">✗</b>':''}</td>`).join('')}</tr>`).join('')}</tbody></table>`}
@@ -7018,12 +7018,16 @@ function cuItem(it,sol,r,L){
    case 'thermo':{const a=Math.round(-8+r()*14),b=Math.round(8+r()*20);return`<div style="display:flex;gap:70px;margin-top:4px;padding-left:30px">${[a,b].map(v=>`<div style="text-align:center">${thermo(-10,30,1,v,true).replace('width="150" height="330"','width="105" height="231"')}<div style="border:1.4px solid #000;width:90px;height:28px;margin:2px auto 0;line-height:28px">${sol?`<span class="sv">${minus(v)} °C</span>`:''}</div></div>`).join('')}</div>`}
    case 'teil':{const S=shuffle([[0,'fest'],[1,'flüssig'],[2,'gasförmig']],r);return`<div style="display:flex;gap:22px;margin-top:6px">${S.map(([st,n])=>`<div style="text-align:center">${partBox(st,r,170,110)}<div style="border-bottom:1.2px solid #000;height:24px;margin-top:2px">${sv(n)}</div></div>`).join('')}</div>`}
    case 'order':{const S=shuffle(it.rows.map((x,i)=>[x,i+1]),r);return S.map(([x,n])=>`<div style="display:flex;gap:10px;align-items:center;margin-top:4px;font-size:14.5px"><span style="flex:none;width:24px;height:24px;border:1.4px solid #000;text-align:center;line-height:24px;font-weight:700;color:#c0392b">${sol?n:''}</span><span>${x}</span></div>`).join('')}
-   case 'thermos':return`<div style="display:flex;gap:14px;align-items:center;margin-top:4px"><div style="flex:none">${thermos(sol).replace('width="400" height="400"','width="210" height="210"')}</div><div class="bank" style="flex:1"><b>Wortliste:</b> ${shuffle(['Verschluss','verspiegelte Wand','luftleerer Zwischenraum','Außenhülle'],r).join(' · ')}</div></div>`;
+   case 'thermos':return`<div style="display:flex;gap:14px;align-items:center;margin-top:4px"><div style="flex:none">${thermos(sol).replace('width="400" height="400"','width="210" height="210"')}</div>${WL?`<div class="bank" style="flex:1"><b>Wortliste:</b> ${shuffle(['Verschluss','verspiegelte Wand','luftleerer Zwischenraum','Außenhülle'],r).join(' · ')}</div>`:''}</div>`;
    case 'foto':{const R=take(it.rows,it.k);return`<div style="display:grid;grid-template-columns:repeat(${R.length},1fr);gap:10px;margin-top:6px">${R.map(([k,cap,c])=>`<div style="font-size:13px;line-height:1.25"><svg viewBox="0 0 150 100" width="150" height="100" ${SVGNS} style="display:block;width:100%;height:auto;border-radius:6px">${kiImg(k,0,0,150,100)}</svg><div style="margin-top:3px;min-height:32px">${cap}</div><div style="margin-top:3px">${O(c===0)} Kälte &nbsp; ${O(c===1)} Hitze</div></div>`).join('')}</div>`}
    case 'open':return sol?`<div style="color:#c0392b;font-weight:700;margin-top:4px">${it.a}</div>`+(L?lines(Math.max(0,(it.n||3)-2)):''):(L?lines(it.n||3):`<div style="height:${(it.n||3)*30}px"></div>`);
   }
   return '';
 }
+const CUSEL={};
+function cuLabel(it){let s=it.x||'';if(!s&&it.rows){const r0=it.rows[0];s=typeof r0==='string'?r0:it.t==='foto'?r0[1]:r0[0]}s=String(s).replace(/\[\[|\]\]/g,'').replace(/<[^>]+>|&nbsp;/g,' ').replace(/\s+/g,' ');
+  const kind={gap:'Lückentext',pick:'Ankreuzen',name:'Benennen',xt:'Kreuztabelle',tf:'Richtig/falsch',thermo:'Thermometer ablesen',teil:'Teilchenmodell',open:'Frage',order:'Reihenfolge',thermos:'Thermoskanne beschriften',foto:'Tierfotos'}[it.t]||it.t;
+  const txt=it.t==='open'||it.t==='thermo'||it.t==='teil'||it.t==='thermos'?it.q:(s||it.q);return kind+': '+(txt.length>58?txt.slice(0,56)+'…':txt)}
 function viewCheckup(m){
   const TN=t=>(TOPICS.find(x=>x.id===t)||{}).name||t,tops=[...new Set(CU.map(x=>x.top))];
   const panel=`<div class="g"><b>Lernziele</b><div class="note">Jedes Lernziel bekommt eine eigene Seite mit 4 Aufgaben. Die letzte ist immer eine 4.0-Aufgabe (Denkaufgabe).</div>
@@ -7031,26 +7035,36 @@ function viewCheckup(m){
    <div class="g"><b>Aufbau</b><label>Nummerierung<select id="o-cnum"><option value="n">1. 2. 3. 4.</option><option value="a">a) b) c) d)</option></select></label>
     <label class="ck"><input type="checkbox" id="o-c40"> 4.0-Aufgabe kennzeichnen</label>
     <label class="ck"><input type="checkbox" id="o-cln" checked> Antwortlinien</label>
+    <label class="ck"><input type="checkbox" id="o-cwl" checked> Wortlisten anzeigen</label>
     <label class="ck"><input type="checkbox" id="o-cus" checked> Unterschrift am Ende</label>
     <label class="ck"><input type="checkbox" id="o-cfill" checked> Seite ganz ausnutzen (mehr Platz bei der 4.0-Aufgabe)</label>
     <label>Fußzeile<input type="text" id="o-cfoot" value="PH 2026/2027"></label>
-    <div class="note">„Neu würfeln“ wählt andere Aufgaben aus dem Vorrat. Die Kästchen rechts oben sind für deine Beurteilung nach der 4.0-Skala.</div></div>`;
+    <div class="note">„Neu würfeln“ wählt andere Aufgaben aus dem Vorrat. Die Kästchen rechts oben sind für deine Beurteilung nach der 4.0-Skala.</div></div>
+   <div class="g" id="cu-slots"></div>`;
   sheetView(m,{id:'gen-checkup',heading:'Check-up-Generator',sub:'Werkzeuge · Check-up nach der 4.0-Skala',title:'Check-up Physik',file:'Checkup_Physik',panel,
    render(o,sol,r){const S=CU.filter(x=>o['lz_'+x.id.replace(/-/g,'_')]);if(!S.length)return'<p style="color:#666">Wähle rechts mindestens ein Lernziel aus.</p>';
     const TD='border:1.5px solid #000;vertical-align:top;';
     let h=`<style>#sheet .sroot>h1,#sheet .sroot>.hdr{display:none}#sheet table.cut td{border:1.5px solid #000}</style>`;
-    S.forEach((L,li)=>{const bs=L.b.slice(),pick=shuffle(bs.map((x,i)=>[x,i]),r).slice(0,3).sort((a,b)=>a[1]-b[1]).map(x=>x[0]),v=L.v[Math.floor(r()*L.v.length)],T=[...pick,v],last=li===S.length-1;
+    S.forEach((L,li)=>{if(!CUSEL[L.id]){const ix=L.b.map((_,i)=>i).sort(()=>Math.random()-.5).slice(0,3).sort((a,b)=>a-b);CUSEL[L.id]=[...ix,Math.floor(Math.random()*L.v.length)]}
+      const C=CUSEL[L.id],T=[L.b[C[0]],L.b[C[1]],L.b[C[2]],L.v[C[3]]],last=li===S.length-1;
       let t=`<table class="cut" style="width:100%;table-layout:fixed;border-collapse:collapse;margin:0${o.cfill?`;height:${o.cfoot?955:985}px`:''}"><colgroup><col><col style="width:92px"></colgroup><tbody>`;
       const H1=o.cfill?' style="height:1px"':'';
       if(li===0)t+=`<tr${H1}><td style="${TD}padding:12px;font-weight:700;height:22px">Name:</td><td style="${TD}"></td></tr>`;
       t+=`<tr${H1}><td${li?'':' colspan="2"'} style="${TD}background:#e6e6e6;text-align:center;padding:6px 12px"><div style="font-weight:700;font-size:16px">Check-up Physik</div><div style="font-size:15px">Lernziel: ${esc(L.lz)}</div></td>${li?`<td style="${TD}background:#e6e6e6"></td>`:''}</tr>`;
       T.forEach((it,i)=>{const nr=o.cnum==='a'?'abcd'[i]+')':(i+1)+'.',is40=i===3;
-        t+=`<tr${is40?'':H1}><td colspan="2" style="${TD}padding:8px 12px 12px"><div style="font-weight:700">${nr} ${it.q}${is40&&o.c40?' <span style="font-weight:400;font-size:12px;border:1px solid #777;border-radius:8px;padding:0 6px;margin-left:4px">4.0</span>':''}</div>${cuItem(it,sol,r,o.cln)}</td></tr>`});
+        t+=`<tr${is40?'':H1}><td colspan="2" style="${TD}padding:8px 12px 12px"><div style="font-weight:700">${nr} ${it.q}${is40&&o.c40?' <span style="font-weight:400;font-size:12px;border:1px solid #777;border-radius:8px;padding:0 6px;margin-left:4px">4.0</span>':''}</div>${cuItem(it,sol,r,o.cln,o.cwl)}</td></tr>`});
       if(last&&o.cus)t+=`<tr${H1}><td colspan="2" style="${TD}padding:10px 12px;font-size:13px">Unterschrift:</td></tr>`;
       t+=`</tbody></table>`;
       h+=`<div class="task${li?' newpg':''}" style="margin:0">${t}</div>`;
       if(o.cfoot)h+=`<div class="task" style="margin:8px 0 0;font-size:11px;color:#444">${esc(o.cfoot)}</div>`;});
+    setTimeout(()=>cuSlots(S),0);
     return h}});
+  function cuSlots(S){const box=m.querySelector('#cu-slots');if(!box)return;const nrs=$('#o-cnum').value==='a'?['a)','b)','c)','d)']:['1.','2.','3.','4.'];
+    box.innerHTML=S.length?`<b>Aufgaben tauschen</b><div class="note">Gefällt dir eine Aufgabe nicht, wähle eine andere aus dem Vorrat oder klicke auf ↻.</div>`+S.map(L=>{const C=CUSEL[L.id];return`<div style="margin-top:8px;font-size:12.5px;font-weight:700;color:#333">${esc(L.lz.length>60?L.lz.slice(0,58)+'…':L.lz)}</div>`+C.map((c,s)=>{const pool=s<3?L.b:L.v;return`<div style="display:flex;gap:4px;align-items:center;margin-top:3px"><span style="flex:none;width:22px;font-weight:700">${nrs[s]}</span><select data-lz="${L.id}" data-s="${s}" style="flex:1;min-width:0;font-size:12px">${pool.map((it,i)=>`<option value="${i}"${i===c?' selected':''}>${esc(cuLabel(it))}</option>`).join('')}</select><button type="button" class="b" data-lz="${L.id}" data-s="${s}" title="andere Aufgabe" style="flex:none;padding:2px 8px">↻</button></div>`}).join('')}).join(''):'';
+    const set=(id,s,val)=>{const C=CUSEL[id];if(s<3){const o=C.indexOf(val);if(o>-1&&o<3&&o!==s)C[o]=C[s]}C[s]=val;$('#o-cnum').dispatchEvent(new Event('change',{bubbles:true}))};
+    box.querySelectorAll('select').forEach(sel=>sel.onchange=e=>{e.stopPropagation();set(sel.dataset.lz,+sel.dataset.s,+sel.value)});
+    box.querySelectorAll('button').forEach(b=>b.onclick=e=>{e.stopPropagation();const L=CU.find(x=>x.id===b.dataset.lz),s=+b.dataset.s,C=CUSEL[L.id],pool=s<3?L.b:L.v;let v=C[s];for(let k=0;k<pool.length;k++){v=(v+1)%pool.length;if(s===3||!C.slice(0,3).includes(v))break}set(L.id,s,v)});}
+  m.addEventListener('click',e=>{if(e.target&&e.target.id==='o-new')for(const k in CUSEL)delete CUSEL[k]},true);
 }
 
 /* =================== VERTRETUNGSSTUNDE AUF KNOPFDRUCK =================== */
