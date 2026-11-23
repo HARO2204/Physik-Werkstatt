@@ -7008,6 +7008,43 @@ const CU=[
      {t:'open',q:'Nenne zu jeder Größe ein passendes Messgerät: Länge, Masse, Zeit, Temperatur.',a:'Maßband oder Lineal, Waage, Stoppuhr, Thermometer.',n:2}],
   v:[{t:'open',q:'Lisa misst die Länge ihres Tisches dreimal: 1,21 m, 1,19 m und 1,20 m. Warum sind die Werte verschieden, und welchen Wert sollte sie angeben?',a:'Beim Messen entstehen immer kleine Messfehler. Sie gibt den Mittelwert an: 1,20 m.',n:4}]}
 ];
+
+/* SPF-Varianten (vereinfacht, mit Hilfen) */
+const CU_SPF={
+ 's-kreis':{lz:'Ich kenne die Teile eines Stromkreises und weiß, welche Stoffe den Strom leiten.',
+  help:'Strom fließt nur im <b>geschlossenen</b> Kreis: Batterie → Kabel → Lampe → Kabel → zurück zur Batterie. <b>Metalle</b> leiten den Strom. Kunststoff, Holz und Glas leiten ihn <b>nicht</b>.',
+  b:[{t:'gap',q:'Ergänze. Die Wörter helfen dir.',x:'Ein Stromkreis braucht eine [[Batterie]], [[Kabel]] und eine [[Lampe]].',bank:1},
+     {t:'xt',q:'Leitet der Gegenstand den Strom? Kreuze an.',head:'Gegenstand',cols:['ja','nein'],rows:[['🔩 Eisennagel',[0]],['🥄 Holzlöffel',[1]],['📎 Büroklammer aus Metall',[0]],['🥤 Plastikbecher',[1]],['🔑 Schlüssel aus Metall',[0]],['🥛 Glas',[1]]],k:4},
+     {t:'circ1',q:'Leuchtet die Lampe? Kreuze an.'},
+     {t:'pick',q:'Kreuze die richtige Antwort an.',rows:[['Der Schalter ist geschlossen. Die Lampe …',['leuchtet','leuchtet nicht']],['Der Schalter ist offen. Die Lampe …',['leuchtet nicht','leuchtet']]]},
+     {t:'tf',q:'Richtig oder falsch? Kreuze an.',rows:[['Strom fließt nur im geschlossenen Stromkreis.',1],['Holz leitet den Strom.',0],['Kabel sind innen aus Metall.',1]]}],
+  v:[{t:'open',q:'Warum ist um ein Kabel eine Hülle aus Kunststoff?',h:'Kunststoff schützt uns, weil …',hw:['leitet keinen Strom','Stromschlag'],a:'Kunststoff leitet keinen Strom. Er schützt uns vor einem Stromschlag.',n:2},
+     {t:'open',q:'Die Lampe leuchtet nicht. Nenne einen Grund.',h:'Die Lampe leuchtet nicht, weil …',hw:['Schalter offen','Batterie leer','Kabel lose'],a:'Der Schalter ist offen, ein Kabel ist lose, die Batterie ist leer oder die Lampe ist kaputt.',n:2}]},
+ 's-schalt':{lz:'Ich kenne die Reihenschaltung und die Parallelschaltung.',
+  help:'<b>Reihenschaltung:</b> Die Lampen sind hintereinander. Der Strom hat nur <b>einen</b> Weg.<br><b>Parallelschaltung:</b> Jede Lampe hat ihren <b>eigenen</b> Weg.',
+  b:[{t:'circ2',q:'Welches Bild zeigt eine Reihenschaltung, welches eine Parallelschaltung? Schreibe darunter.'},
+     {t:'gap',q:'Ergänze. Die Wörter helfen dir.',x:'In der [[Reihenschaltung]] hat der Strom nur einen Weg. In der [[Parallelschaltung]] hat jede Lampe einen eigenen Weg.',bank:1},
+     {t:'pick',q:'Eine Lampe geht kaputt. Was passiert? Kreuze an.',rows:[['Reihenschaltung: Die anderen Lampen …',['gehen aus','leuchten weiter']],['Parallelschaltung: Die anderen Lampen …',['leuchten weiter','gehen aus']]]},
+     {t:'pick',q:'Kreuze an.',rows:[['Die Lampen in unserer Wohnung sind …',['parallel geschaltet','in Reihe geschaltet']],['In der Reihenschaltung hat der Strom …',['einen Weg','viele Wege']]]}],
+  v:[{t:'open',q:'Bei einer Lichterkette geht eine Lampe kaputt. Jetzt sind alle Lampen dunkel. Welche Schaltung ist das?',h:'Das ist eine …, weil …',hw:['Reihenschaltung','nur einen Weg'],a:'Das ist eine Reihenschaltung, weil der Strom nur einen Weg hat.',n:2},
+     {t:'open',q:'Warum sind die Lampen im Haus parallel geschaltet?',h:'Parallel ist besser, weil …',hw:['einzeln einschalten','leuchten weiter'],a:'Man kann jede Lampe einzeln einschalten. Geht eine kaputt, leuchten die anderen weiter.',n:2}]},
+ 'm-mag':{lz:'Ich kenne die Pole eines Magneten und weiß, was ein Magnet anzieht.',
+  help:'Jeder Magnet hat einen <b>Nordpol (N, rot)</b> und einen <b>Südpol (S, grün)</b>.<br>Gleiche Pole <b>stoßen sich ab</b>. Verschiedene Pole <b>ziehen sich an</b>. Magnete ziehen <b>Eisen</b> an.',
+  b:[{t:'magpair',q:'Ziehen sich die Magnete an oder stoßen sie sich ab? Kreuze an.'},
+     {t:'xt',q:'Zieht der Magnet den Gegenstand an? Kreuze an.',head:'Gegenstand',cols:['ja','nein'],rows:[['🔩 Eisennagel',[0]],['📎 Büroklammer aus Eisen',[0]],['🥄 Holzlöffel',[1]],['🧻 Papier',[1]],['🔑 Schlüssel aus Eisen',[0]],['🥤 Plastikbecher',[1]]],k:4},
+     {t:'gap',q:'Ergänze. Die Wörter helfen dir.',x:'Jeder Magnet hat einen [[Nordpol]] und einen [[Südpol]]. Ein Magnet zieht [[Eisen]] an.',bank:1},
+     {t:'pick',q:'Kreuze an.',rows:[['Nordpol und Südpol …',['ziehen sich an','stoßen sich ab']],['Nordpol und Nordpol …',['stoßen sich ab','ziehen sich an']]]}],
+  v:[{t:'open',q:'Warum hält ein Magnet an der Kühlschranktür?',h:'Der Magnet hält, weil die Tür …',hw:['Eisen','zieht an'],a:'Die Kühlschranktür ist aus Eisen (Stahl). Der Magnet zieht Eisen an.',n:2},
+     {t:'open',q:'Auf einem Magneten fehlen die Farben. Wie findest du den Nordpol?',h:'Ich nehme einen zweiten Magneten. Wenn …',hw:['abstoßen','gleiche Pole'],a:'Ich halte den Nordpol eines zweiten Magneten hin. Stoßen sie sich ab, ist dort auch ein Nordpol.',n:2}]}
+};
+function spfCirc(par,closed=true,w=230,hh=150){const L=(x,y)=>`<g transform="translate(${x} ${y})"><circle r="13" fill="#fff59d" stroke="#000" stroke-width="2"/><path d="M-9 -9L9 9M9 -9L-9 9" stroke="#000" stroke-width="1.6"/></g>`,W='stroke="#000" stroke-width="2.2" fill="none"',R=w-20,B=hh-20,m=hh/2;
+  let s=`<svg viewBox="0 0 ${w} ${hh}" width="${w}" height="${hh}" ${SVGNS} style="display:block">`;
+  s+=`<path d="M20 ${m-6} V20 H${R} M20 ${m+6} V${B} H${R}" ${W}/><path d="M6 ${m-6} H34" stroke="#000" stroke-width="3"/><path d="M13 ${m+6} H27" stroke="#000" stroke-width="4"/><text x="38" y="${m-4}" font-size="13" font-weight="700">+</text><text x="38" y="${m+16}" font-size="15" font-weight="700">−</text>`;
+  if(par){s+=`<path d="M${R} 20 V${B} M${w*.55} 20 V${B}" ${W}/>`+L(w*.55,m)+L(R,m)}
+  else if(par===false){s+=`<path d="M${R} 20 V${B}" ${W}/>`+L(w*.4,20)+L(w*.7,20)}
+  else{s+=L(w*.5,20);s+=closed?`<path d="M${R} 20 V${B}" ${W}/><circle cx="${R}" cy="${m-14}" r="3"/><circle cx="${R}" cy="${m+14}" r="3"/>`:`<path d="M${R} 20 V${m-14} M${R} ${m+14} V${B} M${R} ${m+14} L${R-22} ${m-12}" ${W}/><circle cx="${R}" cy="${m-14}" r="3"/><circle cx="${R}" cy="${m+14}" r="3"/>`;s+=`<text x="${R-8}" y="${m+32}" font-size="11" text-anchor="end">Schalter</text>`}
+  return s+'</svg>'}
+function magBar(o,x,y){const a=o==='NS';return`<g transform="translate(${x} ${y})"><rect width="60" height="26" fill="${a?'#e74c3c':'#27ae60'}" stroke="#000"/><rect x="60" width="60" height="26" fill="${a?'#27ae60':'#e74c3c'}" stroke="#000"/><text x="30" y="19" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">${a?'N':'S'}</text><text x="90" y="19" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">${a?'S':'N'}</text></g>`}
 function cuItem(it,sol,r,L,WL=true){
   const sv=t=>sol?`<span class="sv">${t}</span>`:'',O=on=>`<span style="display:inline-block;width:15px;height:15px;border:1.4px solid #000;border-radius:50%;vertical-align:-2px;text-align:center;line-height:13px;font-size:12px;color:#c0392b;font-weight:700">${sol&&on?'✗':''}</span>`;
   const take=(a,k)=>k&&k<a.length?shuffle(a.map((x,i)=>[x,i]),r).slice(0,k).sort((p,q)=>p[1]-q[1]).map(x=>x[0]):a;
@@ -7020,21 +7057,26 @@ function cuItem(it,sol,r,L,WL=true){
    case 'thermo':{const a=Math.round(-8+r()*14),b=Math.round(8+r()*20);return`<div style="display:flex;gap:70px;margin-top:4px;padding-left:30px">${[a,b].map(v=>`<div style="text-align:center">${thermo(-10,30,1,v,true).replace('width="150" height="330"','width="105" height="231"')}<div style="border:1.4px solid #000;width:90px;height:28px;margin:2px auto 0;line-height:28px">${sol?`<span class="sv">${minus(v)} °C</span>`:''}</div></div>`).join('')}</div>`}
    case 'teil':{const S=shuffle([[0,'fest'],[1,'flüssig'],[2,'gasförmig']],r);return`<div style="display:flex;gap:22px;margin-top:6px">${S.map(([st,n])=>`<div style="text-align:center">${partBox(st,r,170,110)}<div style="border-bottom:1.2px solid #000;height:24px;margin-top:2px">${sv(n)}</div></div>`).join('')}</div>`}
    case 'kuehl':{const P=[['A','Verdampfer'],['B','Kompressor'],['C','Verflüssiger'],['D','Drossel']];return`<div style="display:flex;gap:16px;align-items:center;margin-top:4px"><div style="flex:none;width:260px">${kuehlSVG(false).replace('width="500" height="353"','width="260" height="184"')}</div><div style="flex:1">${P.map(([l,n])=>`<div style="display:flex;gap:8px;align-items:flex-end;margin-top:6px"><b style="width:18px">${l}</b><span style="flex:1;border-bottom:1.2px solid #000;height:24px">${sol?`<span class="sv">${n}</span>`:''}</span></div>`).join('')}${WL?`<div class="bank" style="margin-top:10px"><b>Wortliste:</b> ${shuffle(P.map(x=>x[1]),r).join(' · ')}</div>`:''}</div></div>`}
+   case 'circ1':{const C=shuffle([[true,1],[false,0]],r);return`<div style="display:flex;gap:40px;margin-top:6px">${C.map(([c,on],i)=>`<div style="text-align:center"><b>${'AB'[i]}</b>${spfCirc(null,c,200,130)}<div style="margin-top:4px">${O(on)} leuchtet &nbsp; ${O(!on)} leuchtet nicht</div></div>`).join('')}</div>`}
+   case 'circ2':{const C=shuffle([[false,'Reihenschaltung'],[true,'Parallelschaltung']],r);return`<div style="display:flex;gap:40px;margin-top:6px">${C.map(([p,n],i)=>`<div style="text-align:center"><b>${'AB'[i]}</b>${spfCirc(p,true,210,140)}<div style="border-bottom:1.2px solid #000;height:26px;margin-top:4px">${sol?`<span class="sv">${n}</span>`:''}</div></div>`).join('')}</div>${WL?`<div class="bank" style="margin-top:6px"><b>Wortliste:</b> Reihenschaltung · Parallelschaltung</div>`:''}`}
+   case 'magpair':{const P=shuffle([['NS','NS'],['NS','SN'],['SN','NS'],['SN','SN']],r).slice(0,3);return P.map(([a,b])=>{const att=a[1]!==b[0];return`<div style="display:flex;gap:24px;align-items:center;margin-top:8px"><svg viewBox="0 0 270 30" width="270" height="30" ${SVGNS}>${magBar(a,2,2)}${magBar(b,148,2)}</svg><span>${O(att)} ziehen sich an</span><span>${O(!att)} stoßen sich ab</span></div>`}).join('')}
    case 'order':{const S=shuffle(it.rows.map((x,i)=>[x,i+1]),r);return S.map(([x,n])=>`<div style="display:flex;gap:10px;align-items:center;margin-top:4px;font-size:14.5px"><span style="flex:none;width:24px;height:24px;border:1.4px solid #000;text-align:center;line-height:24px;font-weight:700;color:#c0392b">${sol?n:''}</span><span>${x}</span></div>`).join('')}
    case 'thermos':return`<div style="display:flex;gap:14px;align-items:center;margin-top:4px"><div style="flex:none">${thermos(sol).replace('width="400" height="400"','width="185" height="185"')}</div>${WL?`<div class="bank" style="flex:1"><b>Wortliste:</b> ${shuffle(['Verschluss','verspiegelte Wand','luftleerer Zwischenraum','Außenhülle'],r).join(' · ')}</div>`:''}</div>`;
    case 'foto':{const R=take(it.rows,it.k);return`<div style="display:grid;grid-template-columns:repeat(${R.length},1fr);gap:10px;margin-top:6px">${R.map(([k,cap,c])=>`<div style="font-size:13px;line-height:1.25"><svg viewBox="0 0 150 100" width="150" height="100" ${SVGNS} style="display:block;width:100%;height:auto;border-radius:6px">${kiImg(k,0,0,150,100)}</svg><div style="margin-top:3px;min-height:32px">${cap}</div><div style="margin-top:3px">${O(c===0)} Kälte &nbsp; ${O(c===1)} Hitze</div></div>`).join('')}</div>`}
-   case 'open':return sol?`<div style="color:#c0392b;font-weight:700;margin-top:4px">${it.a}</div>`+(L?lines(Math.max(0,(it.n||3)-2)):''):(L?lines(it.n||3):`<div style="height:${(it.n||3)*30}px"></div>`);
+   case 'open':if(it.h){const hint=(it.hw&&WL?`<div class="bank" style="margin-top:4px"><b>Hilfe:</b> ${it.hw.join(' · ')}</div>`:'');return hint+(sol?`<div style="color:#c0392b;font-weight:700;margin-top:4px">${it.a}</div>`:`<div style="font-style:italic;margin-top:8px">${it.h}</div>`+(L?lines(it.n||2):`<div style="height:${(it.n||2)*30}px"></div>`))}
+    return sol?`<div style="color:#c0392b;font-weight:700;margin-top:4px">${it.a}</div>`+(L?lines(Math.max(0,(it.n||3)-2)):''):(L?lines(it.n||3):`<div style="height:${(it.n||3)*30}px"></div>`);
   }
   return '';
 }
-const CUSEL={};
+const CUSEL={},CUEFF={};
 function cuLabel(it){let s=it.x||'';if(!s&&it.rows){const r0=it.rows[0];s=typeof r0==='string'?r0:it.t==='foto'?r0[1]:r0[0]}s=String(s).replace(/\[\[|\]\]/g,'').replace(/<[^>]+>|&nbsp;/g,' ').replace(/\s+/g,' ');
-  const kind={gap:'Lückentext',pick:'Ankreuzen',name:'Benennen',xt:'Kreuztabelle',tf:'Richtig/falsch',thermo:'Thermometer ablesen',teil:'Teilchenmodell',open:'Frage',order:'Reihenfolge',thermos:'Thermoskanne beschriften',foto:'Tierfotos',kuehl:'Kühlschrank beschriften'}[it.t]||it.t;
-  const txt=it.t==='open'||it.t==='thermo'||it.t==='teil'||it.t==='thermos'||it.t==='kuehl'?it.q:(s||it.q);return kind+': '+(txt.length>58?txt.slice(0,56)+'…':txt)}
+  const kind={gap:'Lückentext',pick:'Ankreuzen',name:'Benennen',xt:'Kreuztabelle',tf:'Richtig/falsch',thermo:'Thermometer ablesen',teil:'Teilchenmodell',open:'Frage',order:'Reihenfolge',thermos:'Thermoskanne beschriften',foto:'Tierfotos',kuehl:'Kühlschrank beschriften',circ1:'Bilder',circ2:'Schaltbilder',magpair:'Magnete'}[it.t]||it.t;
+  const txt=['open','thermo','teil','thermos','kuehl','circ1','circ2','magpair'].includes(it.t)?it.q:(s||it.q);return kind+': '+(txt.length>58?txt.slice(0,56)+'…':txt)}
 function viewCheckup(m){
   const TN=t=>(TOPICS.find(x=>x.id===t)||{}).name||t,tops=[...new Set(CU.map(x=>x.top))];
   const panel=`<div class="g"><b>Lernziele</b><div class="note">Jedes Lernziel bekommt eine eigene Seite mit 4 Aufgaben. Die letzte ist immer eine 4.0-Aufgabe (Denkaufgabe).</div>
-    ${tops.map(t=>`<div class="note" style="font-weight:700;margin-top:6px;color:#333">${esc(TN(t))}</div>${CU.filter(x=>x.top===t).map((x,i)=>`<label class="ck"><input type="checkbox" id="o-lz_${x.id.replace(/-/g,'_')}"${t==='waerme'&&i<2?' checked':''}> ${esc(x.lz)}</label>`).join('')}`).join('')}</div>
+    ${tops.map(t=>`<div class="note" style="font-weight:700;margin-top:6px;color:#333">${esc(TN(t))}</div>${CU.filter(x=>x.top===t).map((x,i)=>`<label class="ck"><input type="checkbox" id="o-lz_${x.id.replace(/-/g,'_')}"${t==='waerme'&&i<2?' checked':''}> ${CU_SPF[x.id]?'★ ':''}${esc(x.lz)}</label>`).join('')}`).join('')}</div>
+   <div class="g"><b>SPF-Modus</b><label class="ck"><input type="checkbox" id="o-spf"> vereinfachte Fassung für Kinder mit SPF</label><label class="ck"><input type="checkbox" id="o-shelp" checked> mit Hilfekasten „Das hilft dir“</label><label class="ck"><input type="checkbox" id="o-sbig" checked> größere Schrift</label><div class="note">Eine SPF-Fassung gibt es derzeit für die Lernziele mit ★: Stromkreis, Reihen- und Parallelschaltung, Magnetismus. Andere Lernziele bleiben in der normalen Fassung. Wortlisten und Hilfswörter sind im SPF-Modus immer dabei.</div></div>
    <div class="g"><b>Aufbau</b><label>Nummerierung<select id="o-cnum"><option value="n">1. 2. 3. 4.</option><option value="a">a) b) c) d)</option></select></label>
     <label class="ck"><input type="checkbox" id="o-c40"> 4.0-Aufgabe kennzeichnen</label>
     <label class="ck"><input type="checkbox" id="o-cln" checked> Antwortlinien</label>
@@ -7045,27 +7087,29 @@ function viewCheckup(m){
     <div class="note">„Neu würfeln“ wählt andere Aufgaben aus dem Vorrat. Die Kästchen rechts oben sind für deine Beurteilung nach der 4.0-Skala.</div></div>
    <div class="g" id="cu-slots"></div>`;
   sheetView(m,{id:'gen-checkup',heading:'Check-up-Generator',sub:'Werkzeuge · Check-up nach der 4.0-Skala',title:'Check-up Physik',file:'Checkup_Physik',panel,
-   render(o,sol,r){const S=CU.filter(x=>o['lz_'+x.id.replace(/-/g,'_')]);if(!S.length)return'<p style="color:#666">Wähle rechts mindestens ein Lernziel aus.</p>';
+   render(o,sol,r){const S=CU.filter(x=>o['lz_'+x.id.replace(/-/g,'_')]).map(x=>o.spf&&CU_SPF[x.id]?{...CU_SPF[x.id],id:x.id+'#spf',top:x.top,spf:1}:x);S.forEach(x=>CUEFF[x.id]=x);if(!S.length)return'<p style="color:#666">Wähle rechts mindestens ein Lernziel aus.</p>';
     const TD='border:1.5px solid #000;vertical-align:top;';
-    let h=`<style>#sheet .sroot>h1,#sheet .sroot>.hdr{display:none}#sheet table.cut td{border:1.5px solid #000}</style>`;
+    let h=`<style>#sheet .sroot>h1,#sheet .sroot>.hdr{display:none}#sheet table.cut td{border:1.5px solid #000}${o.spf&&o.sbig?'#sheet table.cut.spf td{font-size:17px;line-height:1.4}#sheet table.cut.spf .bank{font-size:16px}':''}</style>`;
     S.forEach((L,li)=>{if(!CUSEL[L.id]){const ix=L.b.map((_,i)=>i).sort(()=>Math.random()-.5).slice(0,3).sort((a,b)=>a-b);CUSEL[L.id]=[...ix,Math.floor(Math.random()*L.v.length)]}
       const C=CUSEL[L.id],T=[L.b[C[0]],L.b[C[1]],L.b[C[2]],L.v[C[3]]],last=li===S.length-1;
-      let t=`<table class="cut" style="width:100%;table-layout:fixed;border-collapse:collapse;margin:0${o.cfill?`;height:${o.cfoot?955:985}px`:''}"><colgroup><col><col style="width:92px"></colgroup><tbody>`;
+      const WLx=o.cwl||!!L.spf;
+      let t=`<table class="cut${L.spf?' spf':''}" style="width:100%;table-layout:fixed;border-collapse:collapse;margin:0${o.cfill?`;height:${o.cfoot?955:985}px`:''}"><colgroup><col><col style="width:92px"></colgroup><tbody>`;
       const H1=o.cfill?' style="height:1px"':'';
       if(li===0)t+=`<tr${H1}><td style="${TD}padding:12px;font-weight:700;height:22px">Name:</td><td style="${TD}"></td></tr>`;
       t+=`<tr${H1}><td${li?'':' colspan="2"'} style="${TD}background:#e6e6e6;text-align:center;padding:6px 12px"><div style="font-weight:700;font-size:16px">Check-up Physik</div><div style="font-size:15px">Lernziel: ${esc(L.lz)}</div></td>${li?`<td style="${TD}background:#e6e6e6"></td>`:''}</tr>`;
+      if(L.spf&&o.shelp)t+=`<tr${H1}><td colspan="2" style="${TD}background:#fff8e1;padding:8px 12px">💡 <b>Das hilft dir:</b> ${L.help}</td></tr>`;
       T.forEach((it,i)=>{const nr=o.cnum==='a'?'abcd'[i]+')':(i+1)+'.',is40=i===3;
-        t+=`<tr${is40?'':H1}><td colspan="2" style="${TD}padding:8px 12px 12px"><div style="font-weight:700">${nr} ${it.q}${is40&&o.c40?' <span style="font-weight:400;font-size:12px;border:1px solid #777;border-radius:8px;padding:0 6px;margin-left:4px">4.0</span>':''}</div>${cuItem(it,sol,r,o.cln,o.cwl)}</td></tr>`});
+        t+=`<tr${is40?'':H1}><td colspan="2" style="${TD}padding:8px 12px 12px"><div style="font-weight:700">${nr} ${it.q}${is40&&o.c40?' <span style="font-weight:400;font-size:12px;border:1px solid #777;border-radius:8px;padding:0 6px;margin-left:4px">4.0</span>':''}</div>${cuItem(it,sol,r,o.cln,WLx)}</td></tr>`});
       if(last&&o.cus)t+=`<tr${H1}><td colspan="2" style="${TD}padding:10px 12px;font-size:13px">Unterschrift:</td></tr>`;
       t+=`</tbody></table>`;
       h+=`<div class="task${li?' newpg':''}" style="margin:0">${t}${o.cfoot?`<div style="margin-top:8px;font-size:11px;color:#444">${esc(o.cfoot)}</div>`:''}</div>`;});
     setTimeout(()=>cuSlots(S),0);
     return h}});
   function cuSlots(S){const box=m.querySelector('#cu-slots');if(!box)return;const nrs=$('#o-cnum').value==='a'?['a)','b)','c)','d)']:['1.','2.','3.','4.'];
-    box.innerHTML=S.length?`<b>Aufgaben tauschen</b><div class="note">Gefällt dir eine Aufgabe nicht, wähle eine andere aus dem Vorrat oder klicke auf ↻.</div>`+S.map(L=>{const C=CUSEL[L.id];return`<div style="margin-top:8px;font-size:12.5px;font-weight:700;color:#333">${esc(L.lz.length>60?L.lz.slice(0,58)+'…':L.lz)}</div>`+C.map((c,s)=>{const pool=s<3?L.b:L.v;return`<div style="display:flex;gap:4px;align-items:center;margin-top:3px"><span style="flex:none;width:22px;font-weight:700">${nrs[s]}</span><select data-lz="${L.id}" data-s="${s}" style="flex:1;min-width:0;font-size:12px">${pool.map((it,i)=>`<option value="${i}"${i===c?' selected':''}>${esc(cuLabel(it))}</option>`).join('')}</select><button type="button" class="b" data-lz="${L.id}" data-s="${s}" title="andere Aufgabe" style="flex:none;padding:2px 8px">↻</button></div>`}).join('')}).join(''):'';
+    box.innerHTML=S.length?`<b>Aufgaben tauschen</b><div class="note">Gefällt dir eine Aufgabe nicht, wähle eine andere aus dem Vorrat oder klicke auf ↻.</div>`+S.map(L=>{const C=CUSEL[L.id];return`<div style="margin-top:8px;font-size:12.5px;font-weight:700;color:#333">${L.spf?'SPF · ':''}${esc(L.lz.length>60?L.lz.slice(0,58)+'…':L.lz)}</div>`+C.map((c,s)=>{const pool=s<3?L.b:L.v;return`<div style="display:flex;gap:4px;align-items:center;margin-top:3px"><span style="flex:none;width:22px;font-weight:700">${nrs[s]}</span><select data-lz="${L.id}" data-s="${s}" style="flex:1;min-width:0;font-size:12px">${pool.map((it,i)=>`<option value="${i}"${i===c?' selected':''}>${esc(cuLabel(it))}</option>`).join('')}</select><button type="button" class="b" data-lz="${L.id}" data-s="${s}" title="andere Aufgabe" style="flex:none;padding:2px 8px">↻</button></div>`}).join('')}).join(''):'';
     const set=(id,s,val)=>{const C=CUSEL[id];if(s<3){const o=C.indexOf(val);if(o>-1&&o<3&&o!==s)C[o]=C[s]}C[s]=val;$('#o-cnum').dispatchEvent(new Event('change',{bubbles:true}))};
     box.querySelectorAll('select').forEach(sel=>sel.onchange=e=>{e.stopPropagation();set(sel.dataset.lz,+sel.dataset.s,+sel.value)});
-    box.querySelectorAll('button').forEach(b=>b.onclick=e=>{e.stopPropagation();const L=CU.find(x=>x.id===b.dataset.lz),s=+b.dataset.s,C=CUSEL[L.id],pool=s<3?L.b:L.v;let v=C[s];for(let k=0;k<pool.length;k++){v=(v+1)%pool.length;if(s===3||!C.slice(0,3).includes(v))break}set(L.id,s,v)});}
+    box.querySelectorAll('button').forEach(b=>b.onclick=e=>{e.stopPropagation();const L=CUEFF[b.dataset.lz],s=+b.dataset.s,C=CUSEL[L.id],pool=s<3?L.b:L.v;let v=C[s];for(let k=0;k<pool.length;k++){v=(v+1)%pool.length;if(s===3||!C.slice(0,3).includes(v))break}set(L.id,s,v)});}
   m.addEventListener('click',e=>{if(e.target&&e.target.id==='o-new')for(const k in CUSEL)delete CUSEL[k]},true);
 }
 
