@@ -2489,8 +2489,8 @@ function wetterDaten(r,saison){
     if(u(T)&&N.filter(x=>x===Math.max(...N)).length===1&&N.some(x=>x===0)&&N.filter(x=>x>0).length>=2)break}
   return{T,N};
 }
-function wetterChart(T,N,drawLine){
-  const W=640,H=300,x0=60,x1=580,y0=40,y1=250,tmin=Math.floor((Math.min(...T)-2)/5)*5,tmax=Math.ceil((Math.max(...T)+2)/5)*5,nmax=20;
+function wetterChart(T,N,drawLine,lab){
+  const W=640,H=300,x0=60,x1=580,y0=40,y1=250,tmin=Math.floor((Math.min(...T)-2)/5)*5,tmax=Math.ceil((Math.max(...T)+2)/5)*5,nmax=Math.max(20,Math.ceil(Math.max(...N)/5)*5);
   const xs=i=>x0+(i+.5)*(x1-x0)/7,yt=v=>y1-(v-tmin)/(tmax-tmin)*(y1-y0),yn=v=>y1-v/nmax*(y1-y0);
   let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto;font-family:inherit">`;
   for(let v=tmin;v<=tmax;v+=1){const y=yt(v);s+=`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="${v%5===0?'#bbb':'#e6e6e6'}" stroke-width="${v%5===0?1:.6}"/>`;if(v%5===0)s+=`<text x="${x0-8}" y="${y+4}" font-size="12" text-anchor="end" fill="#c0392b">${minus(v)}</text>`}
@@ -2498,24 +2498,67 @@ function wetterChart(T,N,drawLine){
   N.forEach((v,i)=>{if(v>0)s+=`<rect x="${xs(i)-14}" y="${yn(v)}" width="28" height="${y1-yn(v)}" fill="#9db7d6" stroke="#2f62b8" stroke-width="1.2"/>`});
   if(drawLine){s+=`<polyline points="${T.map((v,i)=>xs(i)+','+yt(v)).join(' ')}" fill="none" stroke="#c0392b" stroke-width="2.4"/>`;T.forEach((v,i)=>s+=`<circle cx="${xs(i)}" cy="${yt(v)}" r="4" fill="#c0392b"/>`)}
   s+=`<path d="M${x0} ${y0-10}V${y1}H${x1}V${y0-10}" fill="none" stroke="#000" stroke-width="1.6"/>`;
-  TAGE.forEach((d,i)=>s+=`<text x="${xs(i)}" y="${y1+20}" font-size="13" text-anchor="middle" fill="#000">${d}</text>`);
+  TAGE.forEach((d,i)=>{s+=`<text x="${xs(i)}" y="${y1+18}" font-size="13" text-anchor="middle" fill="#000">${d}</text>`;if(lab)s+=`<text x="${xs(i)}" y="${y1+31}" font-size="10" text-anchor="middle" fill="#555">${lab[i]}</text>`});
   s+=`<text x="${x0-8}" y="${y0-16}" font-size="12" text-anchor="end" fill="#c0392b">°C</text><text x="${x1+8}" y="${y0-16}" font-size="12" fill="#2f62b8">mm</text>`;
-  s+=`<g font-size="12"><line x1="200" y1="${H-12}" x2="225" y2="${H-12}" stroke="#c0392b" stroke-width="2.4"/><text x="230" y="${H-8}" fill="#000">Höchsttemperatur</text><rect x="360" y="${H-18}" width="14" height="12" fill="#9db7d6" stroke="#2f62b8"/><text x="380" y="${H-8}" fill="#000">Niederschlag</text></g>`;
+  s+=`<g font-size="12"><line x1="200" y1="${H-8}" x2="225" y2="${H-8}" stroke="#c0392b" stroke-width="2.4"/><text x="230" y="${H-4}" fill="#000">Höchsttemperatur</text><rect x="360" y="${H-14}" width="14" height="12" fill="#9db7d6" stroke="#2f62b8"/><text x="380" y="${H-4}" fill="#000">Niederschlag</text></g>`;
   return s+'</svg>';
 }
+/* echtes Wetter (Open-Meteo, frei, ohne Schlüssel) */
+const WORTE_ORT={linz:['Linz',48.306,14.286],wels:['Wels',48.157,14.025],steyr:['Steyr',48.039,14.419],ried:['Ried im Innkreis',48.21,13.489],voeckla:['Vöcklabruck',48.009,13.655],gmunden:['Gmunden',47.918,13.799],freistadt:['Freistadt',48.511,14.505],braunau:['Braunau am Inn',48.258,13.034],rohrbach:['Rohrbach-Berg',48.573,13.989],kirchdorf:['Kirchdorf an der Krems',47.906,14.122],perg:['Perg',48.25,14.633],eferding:['Eferding',48.309,14.023],schaerding:['Schärding',48.457,13.432],grieskirchen:['Grieskirchen',48.235,13.83],badischl:['Bad Ischl',47.711,13.623],wien:['Wien',48.208,16.373],salzburg:['Salzburg',47.809,13.055],graz:['Graz',47.071,15.439],innsbruck:['Innsbruck',47.269,11.404],klagenfurt:['Klagenfurt',46.624,14.308],stpoelten:['St. Pölten',48.204,15.626],bregenz:['Bregenz',47.503,9.747],eisenstadt:['Eisenstadt',47.845,16.523]};
+const WCACHE={},WPEND={},WGEO={};
+function wDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function wWoche(off){const d=new Date();d.setHours(12,0,0,0);const wd=(d.getDay()+6)%7;d.setDate(d.getDate()-wd+7*off);return Array.from({length:7},(_,i)=>{const x=new Date(d);x.setDate(d.getDate()+i);return x})}
+function wLoad(key,ort,days,rerender){
+  if(WCACHE[key]||WPEND[key])return;WPEND[key]=1;
+  const geo=ort.custom?fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=de&name='+encodeURIComponent(ort.custom)).then(r=>r.json()).then(j=>{const g=j.results&&j.results[0];if(!g)throw new Error('ort');return[g.name+(g.admin1&&g.country_code==='AT'?'':(g.country?' ('+g.country+')':'')),g.latitude,g.longitude]}):Promise.resolve(ort.p);
+  geo.then(([nm,la,lo])=>fetch(`https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&daily=temperature_2m_max,precipitation_sum&timezone=Europe%2FVienna&start_date=${wDate(days[0])}&end_date=${wDate(days[6])}`).then(r=>{if(!r.ok)throw new Error('http');return r.json()}).then(j=>{
+      const T=j.daily.temperature_2m_max.map(v=>Math.round(v)),N=j.daily.precipitation_sum.map(v=>Math.round(v||0));if(T.some(v=>v==null||isNaN(v)))throw new Error('daten');
+      WCACHE[key]={T,N,ort:nm,at:Date.now()}}))
+   .catch(e=>{WCACHE[key]={err:e&&e.message==='ort'?'ort':'netz'}}).finally(()=>{delete WPEND[key];rerender()});
+}
 function viewWetterDia(m){
+  const ORTOPT=Object.entries(WORTE_ORT).map(([k,v],i)=>(i===15?'<option disabled>──────────</option>':'')+`<option value="${k}"${k==='linz'?' selected':''}>${v[0]}</option>`).join('');
   sheetView(m,{id:'ab-wdia',heading:'Wetterdiagramm',sub:'Wetter und Klima · Arbeitsblatt',title:'Das Wetter dieser Woche',file:'Wetterdiagramm',
-   panel:`<div class="g"><b>Aufgabe</b><label>Jahreszeit<select id="o-sz"><option value="sommer">Sommer</option><option value="herbst" selected>Frühling oder Herbst</option><option value="winter">Winter</option></select></label>
-    <label>Form<select id="o-mode"><option value="lesen" selected>Diagramm ablesen</option><option value="zeichnen">Temperaturkurve selbst zeichnen</option></select></label>
-    <div class="note">Die Werte werden bei jedem Würfeln neu erzeugt. Höchst- und Tiefstwert sind immer eindeutig.</div></div>`,
-   render(o,sol,r){const{T,N}=wetterDaten(r,o.sz);let nr=0,h='';
+   panel:`<div class="g"><b>Wetterdaten</b><div class="note" id="wd-w" hidden style="background:#fff3cd;border-radius:6px;padding:6px 8px;color:#6b5200"></div><label>Woher kommen die Werte?<select id="o-src"><option value="echt" selected>Echtes Wetter</option><option value="zufall">Ausgedachte Woche (Zufall)</option><option value="eigen">Eigene Werte eintragen</option></select></label>
+    <div id="wd-echt"><label>Woche<select id="o-wo"><option value="0" selected>diese Woche</option><option value="-1">letzte Woche</option><option value="-2">vorletzte Woche</option></select></label>
+    <label>Ort<select id="o-ort">${ORTOPT}<option value="custom">anderer Ort …</option></select></label>
+    <label id="wd-cl" hidden>Ortsname<input type="text" id="o-ortx" placeholder="z. B. Bad Leonfelden"></label>
+    <div class="note" id="wd-st">Die Werte kommen von Open-Meteo (Wetterdienste, u. a. GeoSphere Austria). Tage in der Zukunft sind Vorhersage.</div>
+    <label class="ck"><input type="checkbox" id="o-wdat" checked> Datum unter den Tagen</label><label class="ck"><input type="checkbox" id="o-wort" checked> Ort und Zeitraum auf dem Blatt</label></div>
+    <div id="wd-eig" hidden><div class="note">Höchsttemperatur in °C und Niederschlag in mm je Tag:</div><table style="font-size:13px;width:100%"><tr><td></td>${TAGE.map(d=>`<td style="text-align:center">${d}</td>`).join('')}</tr><tr><td>°C</td>${TAGE.map((d,i)=>`<td><input type="text" id="o-et${i}" style="width:100%;padding:2px;text-align:center" inputmode="numeric"></td>`).join('')}</tr><tr><td>mm</td>${TAGE.map((d,i)=>`<td><input type="text" id="o-en${i}" style="width:100%;padding:2px;text-align:center" inputmode="numeric"></td>`).join('')}</tr></table></div>
+    <div id="wd-zuf" hidden><label>Jahreszeit<select id="o-sz"><option value="sommer">Sommer</option><option value="herbst" selected>Frühling oder Herbst</option><option value="winter">Winter</option></select></label><div class="note">Die Werte werden bei jedem Würfeln neu erzeugt.</div></div></div>
+    <div class="g"><b>Aufgabe</b><label>Form<select id="o-mode"><option value="lesen" selected>Diagramm ablesen</option><option value="zeichnen">Temperaturkurve selbst zeichnen</option></select></label></div>`,
+   render(o,sol,r){let T,N,lab=null,info='',warn='';const q=s=>document.getElementById(s);
+    const rer=()=>{const e=q('o-sz');if(e)e.dispatchEvent(new Event('change'))};
+    [['wd-echt','echt'],['wd-eig','eigen'],['wd-zuf','zufall']].forEach(([d,v])=>{const e=q(d);if(e)e.hidden=o.src!==v});const cl=q('wd-cl');if(cl)cl.hidden=o.ort!=='custom';
+    const fb=()=>wetterDaten(r,o.sz);
+    if(o.src==='eigen'){const pn=(v,d)=>{const x=parseFloat(String(v||'').replace(',','.').replace('−','-'));return isNaN(x)?d:Math.round(x)};
+      const F=fb();T=TAGE.map((_,i)=>pn(o['et'+i],null));N=TAGE.map((_,i)=>Math.max(0,pn(o['en'+i],0)));
+      if(T.some(v=>v===null)){T=T.map((v,i)=>v===null?F.T[i]:v);warn='Noch nicht alle Temperaturen eingetragen, fehlende Werte sind vorläufig ausgedacht.'}}
+    else if(o.src==='echt'){const days=wWoche(+o.wo||0),cus=o.ort==='custom',nm=(o.ortx||'').trim();
+      const key=(cus?'c:'+nm.toLowerCase():o.ort)+'|'+wDate(days[0]),st=q('wd-st');
+      if(cus&&!nm){({T,N}=fb());warn='Gib einen Ortsnamen ein.'}
+      else{const c=WCACHE[key];
+        if(c&&c.T){T=c.T;N=c.N;if(o.wdat)lab=days.map(d=>d.getDate()+'.'+(d.getMonth()+1)+'.');
+          const today=new Date();today.setHours(23,59,0,0);const fc=days.filter(d=>d>today).length;
+          info=`${esc(c.ort)} · ${days[0].getDate()}.${days[0].getMonth()+1}. bis ${days[6].getDate()}.${days[6].getMonth()+1}.${days[6].getFullYear()}`+(fc?` · ${fc===7?'alle Tage':'die letzten '+fc+' Tage'} Vorhersage`:'')+' · Quelle: Open-Meteo';
+          if(st)st.innerHTML=`✅ Echte Werte für <b>${esc(c.ort)}</b> geladen.`+(fc?` ${fc} Tag${fc>1?'e sind':' ist'} noch Vorhersage, kurz vor dem Ausdrucken neu laden lohnt sich.`:' Alle Tage sind gemessen.');
+          TAGE.forEach((_,i)=>{const a=q('o-et'+i),b=q('o-en'+i);if(a)a.value=T[i];if(b)b.value=N[i]})}
+        else{({T,N}=fb());
+          if(c&&c.err){warn=c.err==='ort'?'Diesen Ort habe ich nicht gefunden. Versuche einen anderen Namen.':'Das echte Wetter konnte hier nicht geladen werden. Öffne die Physik-Werkstatt über GitHub (dort geht es) oder trage die Werte unter „Eigene Werte eintragen“ ein. Bis dahin siehst du ausgedachte Werte.';if(st)st.textContent='Die Werte kommen von Open-Meteo.'}
+          else{warn='Echtes Wetter wird geladen …';if(st)st.textContent='⏳ Wetterdaten werden geladen …';const go=()=>wLoad(key,{custom:cus?nm:null,p:WORTE_ORT[o.ort]},days,rer);if(cus){clearTimeout(window._wdT);window._wdT=setTimeout(()=>{const x=q('o-ortx');if(x&&x.value.trim()===nm)go()},900)}else go()}}}}
+    else({T,N}=fb());
+    let nr=0,h='';
+    {const w=q('wd-w');if(w){w.hidden=!warn;w.textContent=warn?'⚠️ '+warn:''}}
+    if(info&&o.wort)h+=`<div style="font-size:14px;color:#444;margin:-4px 0 8px">📍 ${info}</div>`;
     const L=t=>sol?`<span class="sv">${t}</span>`:'';
-    if(o.mode==='zeichnen')h+=task(++nr,'Trage die Höchsttemperaturen als Punkte ein und verbinde sie zu einer Kurve.',`<table style="margin-bottom:10px"><thead><tr><th>Tag</th>${TAGE.map(d=>`<th style="text-align:center">${d}</th>`).join('')}</tr></thead><tbody><tr><td><b>°C</b></td>${T.map(v=>`<td style="text-align:center">${minus(v)}</td>`).join('')}</tr></tbody></table>`+wetterChart(T,N,sol));
-    else h+=task(++nr,'Sieh dir das Wetterdiagramm genau an.',wetterChart(T,N,true));
-    const iMax=T.indexOf(Math.max(...T)),iMin=T.indexOf(Math.min(...T)),nMax=N.indexOf(Math.max(...N)),regen=N.filter(x=>x>0).length,sum=N.reduce((a,b)=>a+b,0);
+    if(o.mode==='zeichnen')h+=task(++nr,'Trage die Höchsttemperaturen als Punkte ein und verbinde sie zu einer Kurve.',`<table style="margin-bottom:10px"><thead><tr><th>Tag</th>${TAGE.map(d=>`<th style="text-align:center">${d}</th>`).join('')}</tr></thead><tbody><tr><td><b>°C</b></td>${T.map(v=>`<td style="text-align:center">${minus(v)}</td>`).join('')}</tr></tbody></table>`+wetterChart(T,N,sol,lab));
+    else h+=task(++nr,'Sieh dir das Wetterdiagramm genau an.',wetterChart(T,N,true,lab));
     const LANG={Mo:'Montag',Di:'Dienstag',Mi:'Mittwoch',Do:'Donnerstag',Fr:'Freitag',Sa:'Samstag',So:'Sonntag'};
-    const qs=[[`An welchem Tag war es am wärmsten? Wie warm war es?`,`${LANG[TAGE[iMax]]}, ${minus(T[iMax])} °C`],[`An welchem Tag war es am kältesten?`,`${LANG[TAGE[iMin]]}, ${minus(T[iMin])} °C`],
-      [`Um wie viel Grad war der wärmste Tag wärmer als der kälteste?`,`${T[iMax]-T[iMin]} °C`],[`An wie vielen Tagen hat es geregnet?`,`an ${regen} Tagen`],[`An welchem Tag fiel am meisten Niederschlag? Wie viel?`,`${LANG[TAGE[nMax]]}, ${N[nMax]} mm`],[`Wie viel Niederschlag fiel in der ganzen Woche?`,`${sum} mm, also ${sum} Liter pro m²`]];
+    const all=(a,v)=>a.map((x,i)=>x===v?LANG[TAGE[i]]:null).filter(Boolean).join(' und ');
+    const mx=Math.max(...T),mn=Math.min(...T),nm=Math.max(...N),regen=N.filter(x=>x>0).length,sum=N.reduce((a,b)=>a+b,0);
+    const qs=[[`An welchem Tag war es am wärmsten? Wie warm war es?`,`${all(T,mx)}, ${minus(mx)} °C`],[`An welchem Tag war es am kältesten?`,`${all(T,mn)}, ${minus(mn)} °C`],
+      [`Um wie viel Grad war der wärmste Tag wärmer als der kälteste?`,`${mx-mn} °C`],[`An wie vielen Tagen gab es Niederschlag?`,regen?`an ${regen} Tag${regen>1?'en':''}`:'an keinem Tag'],[`An welchem Tag fiel am meisten Niederschlag? Wie viel?`,nm?`${all(N,nm)}, ${nm} mm`:'kein Niederschlag'],[`Wie viel Niederschlag fiel in der ganzen Woche?`,`${sum} mm, also ${sum} Liter pro m²`]];
     h+=task(++nr,'Beantworte die Fragen.',`<table><colgroup><col><col style="width:250px"></colgroup><tbody>${qs.map(q=>`<tr><td>${q[0]}</td><td style="height:40px">${L(q[1])}</td></tr>`).join('')}</tbody></table>`);
     h+=task(++nr,'Beschreibe das Wetter dieser Woche in zwei Sätzen.',lines(3));
     return h;}});
